@@ -55,9 +55,11 @@ git push origin feature/7-home-ui 	#feature/{이슈번호}-{기능요약}
 |---|---|
 | feat | 신규 기능 개발 |
 | fix | 버그 수정 |
+| docs | 문서(주석) 수정
+| style | 코드 스타일, 포맷팅에 대한 수정 |
 | refactor | 코드 리팩토링 |
-| chore | 유지보수 / 설정 작업 |
-| style | 스타일링 수정 (UI, 마크업 등) |
+| test | 테스트 코드 추가/수정 |
+| chore | 패키지 매니저 수정, 그 외 기타 수정 ex) .gitignore |
 
 ## 이슈 라벨 가이드
 
