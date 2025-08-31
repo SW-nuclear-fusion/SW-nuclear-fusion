@@ -1,0 +1,28 @@
+# Mac OS
+.DS_Store
+**/.DS_Store
+
+# Build
+/build/
+/out/
+/target/
+/bin/
+
+# IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Gradle
+.gradle/
+/*.gradle
+!build.gradle
+!settings.gradle
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
