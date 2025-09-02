@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-@Transactional //모든 작업이 하나의 트랜잭션으로 묶여서 처리됨, 예외가 발생하면 자동으로 롤백됨 -> 데이터 일관성 보장
+@Transactional
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
