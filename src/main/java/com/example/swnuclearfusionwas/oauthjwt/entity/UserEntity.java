@@ -20,10 +20,6 @@ public class UserEntity {
 
     private String username;
 
-    private String birthYear;
-
-    private String mobile;
-
     private String role;
 
 }

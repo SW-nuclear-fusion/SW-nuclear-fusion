@@ -1,9 +1,6 @@
 package com.example.swnuclearfusionwas.oauthjwt.service;
 
-import com.example.swnuclearfusionwas.oauthjwt.dto.CustomOAuth2User;
-import com.example.swnuclearfusionwas.oauthjwt.dto.NaverResponse;
-import com.example.swnuclearfusionwas.oauthjwt.dto.OAuth2Response;
-import com.example.swnuclearfusionwas.oauthjwt.dto.UserDTO;
+import com.example.swnuclearfusionwas.oauthjwt.dto.*;
 import com.example.swnuclearfusionwas.oauthjwt.entity.UserEntity;
 import com.example.swnuclearfusionwas.oauthjwt.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-@Transactional
+@Transactional //모든 작업이 하나의 트랜잭션으로 묶여서 처리됨, 예외가 발생하면 자동으로 롤백됨 -> 데이터 일관성 보장
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -36,10 +33,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (registrationId.equals("naver")){
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
         }
+        else if (registrationId.equals("google")){
+            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+        }
         else {
             return null;
         }
 
+//        리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         UserEntity existData = userRepository.findByUsername(username);
 
@@ -47,8 +48,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername(username);
-            userEntity.setMobile(oAuth2Response.getMobile());
-            userEntity.setBirthYear(oAuth2Response.getBirthYear());
             userEntity.setName(oAuth2Response.getName());
             userEntity.setRole("ROLE_USER");
 
