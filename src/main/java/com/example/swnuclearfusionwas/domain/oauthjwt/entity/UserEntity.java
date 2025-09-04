@@ -1,4 +1,4 @@
-package com.example.swnuclearfusionwas.oauthjwt.entity;
+package com.example.swnuclearfusionwas.domain.oauthjwt.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

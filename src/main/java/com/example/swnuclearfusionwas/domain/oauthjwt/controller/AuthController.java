@@ -1,9 +1,9 @@
-package com.example.swnuclearfusionwas.oauthjwt.controller;
+package com.example.swnuclearfusionwas.domain.oauthjwt.controller;
 
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignInReqDto;
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignInResDto;
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignUpReqDto;
-import com.example.swnuclearfusionwas.oauthjwt.service.UserService;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignInReqDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignInResDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignUpReqDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

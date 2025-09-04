@@ -1,4 +1,4 @@
-package com.example.swnuclearfusionwas.oauthjwt.jwt;
+package com.example.swnuclearfusionwas.domain.oauthjwt.jwt;
 
 import org.springframework.stereotype.Service;
 

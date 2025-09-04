@@ -1,8 +1,8 @@
-package com.example.swnuclearfusionwas.oauthjwt.service;
+package com.example.swnuclearfusionwas.domain.oauthjwt.service;
 
-import com.example.swnuclearfusionwas.oauthjwt.dto.*;
-import com.example.swnuclearfusionwas.oauthjwt.entity.UserEntity;
-import com.example.swnuclearfusionwas.oauthjwt.repository.UserRepository;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.*;
+import com.example.swnuclearfusionwas.domain.oauthjwt.entity.UserEntity;
+import com.example.swnuclearfusionwas.domain.oauthjwt.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

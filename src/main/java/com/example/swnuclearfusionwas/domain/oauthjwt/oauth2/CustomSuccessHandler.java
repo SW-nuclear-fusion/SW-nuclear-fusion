@@ -1,7 +1,7 @@
-package com.example.swnuclearfusionwas.oauthjwt.oauth2;
+package com.example.swnuclearfusionwas.domain.oauthjwt.oauth2;
 
-import com.example.swnuclearfusionwas.oauthjwt.dto.CustomOAuth2User;
-import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTUtil;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.CustomOAuth2User;
+import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +47,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);;
         cookie.setPath("/");
-//        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(true);
 
         return cookie;
     }

@@ -1,4 +1,4 @@
-package com.example.swnuclearfusionwas.oauthjwt.dto;
+package com.example.swnuclearfusionwas.domain.oauthjwt.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,5 @@
-package com.example.swnuclearfusionwas.oauthjwt.dto;
+package com.example.swnuclearfusionwas.domain.oauthjwt.dto;
 
-import com.example.swnuclearfusionwas.oauthjwt.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

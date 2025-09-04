@@ -1,11 +1,11 @@
-package com.example.swnuclearfusionwas.oauthjwt.service;
+package com.example.swnuclearfusionwas.domain.oauthjwt.service;
 
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignInReqDto;
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignInResDto;
-import com.example.swnuclearfusionwas.oauthjwt.dto.SignUpReqDto;
-import com.example.swnuclearfusionwas.oauthjwt.entity.UserEntity;
-import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTService;
-import com.example.swnuclearfusionwas.oauthjwt.repository.UserRepository;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignInReqDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignInResDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.dto.SignUpReqDto;
+import com.example.swnuclearfusionwas.domain.oauthjwt.entity.UserEntity;
+import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTService;
+import com.example.swnuclearfusionwas.domain.oauthjwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
