@@ -1,7 +1,7 @@
 package com.example.swnuclearfusionwas.oauthjwt.config;
 
 import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTFilter;
-import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTUtil;
+import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTService;
 import com.example.swnuclearfusionwas.oauthjwt.oauth2.CustomSuccessHandler;
 import com.example.swnuclearfusionwas.oauthjwt.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +10,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -24,7 +28,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
-    private final JWTUtil jwtUtil;
+    private final JWTService jwtService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -32,10 +36,15 @@ public class SecurityConfig {
                 .requestMatchers("/error");
     }
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTService jwtService) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -59,36 +68,23 @@ public class SecurityConfig {
                         return configuration;
                     }
 
-                }));
-
-        http
-                .csrf((auth) -> auth.disable());
-
-        http
-                .formLogin((auth) -> auth.disable());
-
-        http
-                .httpBasic((auth) -> auth.disable());
-
-        http
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
+                }))
+                .addFilterBefore(new JWTFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig ->
+                                userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
-                );
-
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/auth/success").permitAll()
-                        .anyRequest().authenticated());
-
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/auth/success", "/auth/signin", "/auth/signup").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

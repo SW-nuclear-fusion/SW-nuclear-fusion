@@ -1,5 +1,6 @@
 package com.example.swnuclearfusionwas.oauthjwt.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,5 +42,16 @@ public class JWTUtil {
                 .compact();
     }
 
+    public Long parseUserId(String token) {
+        return Long.valueOf(parseToken(token).getSubject());
+    }
+
+    private Claims parseToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 
 }
