@@ -59,7 +59,7 @@ public class SecurityConfig {
                         return configuration;
                     }
 
-        }));
+                }));
 
         http
                 .csrf((auth) -> auth.disable());
