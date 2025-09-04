@@ -1,9 +1,9 @@
-package com.example.swnuclearfusionwas.oauthjwt.config;
+package com.example.swnuclearfusionwas.domain.oauthjwt.config;
 
-import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTFilter;
-import com.example.swnuclearfusionwas.oauthjwt.jwt.JWTService;
-import com.example.swnuclearfusionwas.oauthjwt.oauth2.CustomSuccessHandler;
-import com.example.swnuclearfusionwas.oauthjwt.service.CustomOAuth2UserService;
+import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTFilter;
+import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTService;
+import com.example.swnuclearfusionwas.domain.oauthjwt.oauth2.CustomSuccessHandler;
+import com.example.swnuclearfusionwas.domain.oauthjwt.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration

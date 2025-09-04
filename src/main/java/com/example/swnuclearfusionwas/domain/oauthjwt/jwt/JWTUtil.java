@@ -1,4 +1,4 @@
-package com.example.swnuclearfusionwas.oauthjwt.jwt;
+package com.example.swnuclearfusionwas.domain.oauthjwt.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

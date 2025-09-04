@@ -1,6 +1,6 @@
-package com.example.swnuclearfusionwas.oauthjwt.repository;
+package com.example.swnuclearfusionwas.domain.oauthjwt.repository;
 
-import com.example.swnuclearfusionwas.oauthjwt.entity.UserEntity;
+import com.example.swnuclearfusionwas.domain.oauthjwt.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

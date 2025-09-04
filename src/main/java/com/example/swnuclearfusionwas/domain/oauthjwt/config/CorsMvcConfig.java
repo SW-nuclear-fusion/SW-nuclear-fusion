@@ -1,4 +1,4 @@
-package com.example.swnuclearfusionwas.oauthjwt.config;
+package com.example.swnuclearfusionwas.domain.oauthjwt.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
