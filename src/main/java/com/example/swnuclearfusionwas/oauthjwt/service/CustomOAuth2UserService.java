@@ -36,11 +36,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else if (registrationId.equals("google")){
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         }
+        else if (registrationId.equals("kakao")){
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        }
         else {
             return null;
         }
 
-//        리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         UserEntity existData = userRepository.findByUsername(username);
 
