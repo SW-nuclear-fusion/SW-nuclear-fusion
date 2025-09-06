@@ -16,5 +16,6 @@ public class SignUpReqDto {
     private String userPW;
     private String name;
     private RoleType role;
+    private String phone;
 
 }

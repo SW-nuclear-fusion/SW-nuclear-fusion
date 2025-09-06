@@ -31,4 +31,7 @@ public class UserEntity {
     @Column(nullable = true)
     private RoleType role;
 
+    @Column(unique = true)
+    private String phone;
+
 }
