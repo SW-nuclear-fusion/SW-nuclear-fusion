@@ -30,7 +30,7 @@ public class UserService {
         }
 
         if (!req.getPhone().matches("\\d{11}")) {
-            throw new IllegalArgumentException("전화번호는 숫자만 입력 가능하며, 10자리여야 합니다.");
+            throw new IllegalArgumentException("전화번호는 숫자만 입력 가능하며, 11자리여야 합니다.");
         }
 
         String encodedPw = passwordEncoder.encode(req.getUserPW());
