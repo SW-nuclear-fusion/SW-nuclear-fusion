@@ -12,14 +12,14 @@ public class JWTService {
     }
 
     public String createToken(String username, String role) {
-        return jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
-    }
-
-    public Long parseUserId(String token) {
-        return jwtUtil.parseUserId(token);
+        return jwtUtil.createJwt(username, role, 60 * 60 * 100000000L);
     }
 
     public Boolean isExpired(String token) {
         return jwtUtil.isExpired(token);
+    }
+
+    public String parseUsername(String tokenValue) {
+        return jwtUtil.parseUsername(tokenValue);
     }
 }

@@ -34,7 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        if (authToken == null || !authToken.startsWith("Bearer ")) {
+        if (authToken == null || authToken.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,18 +47,13 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        Long userId = jwtService.parseUserId(tokenValue);
+        String username = jwtService.parseUsername(tokenValue);
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("User not authenticated.");
-            return;
-        }
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Cookie cookie = new Cookie("Authorization", "Bearer " + tokenValue);
+        Cookie cookie = new Cookie("Authorization", authToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(60 * 60 * 60);
