@@ -25,6 +25,14 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
 
+        if (userRepository.existsByPhone(req.getPhone())) {
+            throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
+        }
+
+        if (!req.getPhone().matches("\\d{11}")) {
+            throw new IllegalArgumentException("전화번호는 숫자만 입력 가능하며, 11자리여야 합니다.");
+        }
+
         String encodedPw = passwordEncoder.encode(req.getUserPW());
 
         UserEntity user = new UserEntity();
@@ -32,6 +40,7 @@ public class UserService {
         user.setUserPW(encodedPw);
         user.setName(req.getName());
         user.setRole(req.getRole());
+        user.setPhone(req.getPhone());
 
         userRepository.save(user);
         return user.getId();

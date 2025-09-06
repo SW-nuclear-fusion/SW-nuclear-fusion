@@ -7,6 +7,7 @@ import com.example.swnuclearfusionwas.domain.oauthjwt.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -35,9 +36,15 @@ public class AuthController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "\"회원가입 성공\""))
             ),
-            @ApiResponse(responseCode = "409", description = "이미 존재하는 아이디",
+            @ApiResponse(responseCode = "409", description = "아이디 또는 전화번호 중복 또는 전화번호 형식 오류",
                     content = @Content(mediaType = "application/json",
-                        schema = @Schema(example = "\"이미 존재하는 아이디입니다.\""))
+                            examples = {
+                                    @ExampleObject(name = "아이디 중복", value = "\"이미 존재하는 아이디입니다.\""),
+                                    @ExampleObject(name = "전화번호 중복", value = "\"이미 등록된 전화번호입니다.\""),
+                                    @ExampleObject(name = "전화번호 형식 오류", value = "\"전화번호는 숫자만 입력 가능하며, 10자리여야 합니다.\"")
+                            },
+                            schema = @Schema(implementation = String.class)
+                    )
             )
     })
     @PostMapping("/signup")
