@@ -39,7 +39,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             role = grantedAuthority.getAuthority();
         }
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 100000000L);
 
         response.addCookie(createCookie("Authorization", token));
 
