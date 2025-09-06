@@ -31,7 +31,7 @@ public class UserService {
         user.setUserId(req.getUserId());
         user.setUserPW(encodedPw);
         user.setName(req.getName());
-        user.setRole("ROLE_USER");
+        user.setRole(req.getRole());
 
         userRepository.save(user);
         return user.getId();
@@ -46,7 +46,7 @@ public class UserService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        String token = jwtService.createToken(user.getUserId(), user.getRole());
+        String token = jwtService.createToken(user.getUserId(), String.valueOf(user.getRole()));
 
         return new SignInResDto(token, user.getName(), user.getRole());
     }
