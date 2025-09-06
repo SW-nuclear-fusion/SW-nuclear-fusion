@@ -75,13 +75,11 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/success", "/auth/signin", "/auth/signup",
-                        "/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**",
-                        "/webjars/**", "/error").permitAll()
+                        .requestMatchers("/", "/auth/success", "/auth/signin", "/auth/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
