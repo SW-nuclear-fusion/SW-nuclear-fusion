@@ -31,12 +31,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String username = customUserDetails.getUsername();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String role = null;
+        Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        if (iterator.hasNext()) {
+            GrantedAuthority grantedAuthority = iterator.next();
+            role = grantedAuthority.getAuthority();
+        }
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 100000000L);
 
         response.addCookie(createCookie("Authorization", token));
 

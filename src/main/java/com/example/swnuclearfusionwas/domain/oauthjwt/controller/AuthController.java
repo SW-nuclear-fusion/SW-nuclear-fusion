@@ -58,7 +58,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "로그인 성공, JWT 토큰 반환",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = SignInResDto.class)),
-                    headers = @Header(name = "Authorization", description = "Bearer <JWT 토큰>")),
+                    headers = @Header(name = "Authorization", description = "<JWT 토큰>")),
             @ApiResponse(responseCode = "401", description = "아이디 또는 비밀번호가 잘못된 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "{ \"accessToken\": null, \"name\": \"아이디 또는 비밀번호가 올바르지 않습니다.\", \"role\": null }"))
@@ -68,7 +68,7 @@ public class AuthController {
     public ResponseEntity<SignInResDto> login(@RequestBody SignInReqDto signInReqDto, HttpServletResponse response) {
         try {
             SignInResDto signInResDto = userService.login(signInReqDto);
-            response.setHeader("Authorization", "Bearer " + signInResDto.getAccessToken());
+            response.setHeader("Authorization", signInResDto.getAccessToken());
             return ResponseEntity.ok(signInResDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new SignInResDto(null, e.getMessage(), null));

@@ -42,16 +42,16 @@ public class JWTUtil {
                 .compact();
     }
 
-    public Long parseUserId(String token) {
-        return Long.valueOf(parseToken(token).getSubject());
-    }
-
     private Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public String parseUsername(String token) {
+        return parseToken(token).get("username", String.class);
     }
 
 }
