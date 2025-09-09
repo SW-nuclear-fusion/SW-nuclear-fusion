@@ -7,29 +7,39 @@ import com.example.swnuclearfusionwas.domain.oauthjwt.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
-public class RoleService {
+public class AuthInitialSetupService {
 
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
-    public RoleService(UserRepository userRepository, JWTUtil jwtUtil) {
+    public AuthInitialSetupService(UserRepository userRepository, JWTUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
     }
 
-    public static class SetRoleRequest {
+    @Getter @Setter
+    public static class InitialSetupRequest {
         @NotNull
-        public RoleType role;
+        private RoleType role;
+        @NotBlank
+        private String phone;
     }
 
-    public Map<String, Object> assignRole(RoleType role, HttpServletRequest request, HttpServletResponse response) {
+    @Transactional
+    public Map<String, Object> initialSetup(UserEntity req,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response) {
         Map<String, Object> body = new LinkedHashMap<>();
 
         String token = getCookieValue(request, "Authorization");
@@ -38,13 +48,11 @@ public class RoleService {
             body.put("status", 401);
             return body;
         }
-
         if (Boolean.TRUE.equals(jwtUtil.isExpired(token))) {
             body.put("error", "JWT가 만료되었습니다.");
             body.put("status", 401);
             return body;
         }
-
         String username = jwtUtil.getUsername(token);
         if (username == null || username.isBlank()) {
             body.put("error", "JWT에 username 클레임이 없습니다.");
@@ -59,10 +67,23 @@ public class RoleService {
             return body;
         }
 
-        user.setRole(role);
+        if (req.getPhone() == null || !req.getPhone().matches("\\d{11}")) {
+            body.put("error", "전화번호는 숫자만 입력 가능하며, 11자리여야 합니다.");
+            body.put("status", 400);
+            return body;
+        }
+        boolean phoneExists = userRepository.existsByPhone(req.getPhone());
+        if (phoneExists && (user.getPhone() == null || !req.getPhone().equals(user.getPhone()))) {
+            body.put("error", "이미 등록된 전화번호입니다.");
+            body.put("status", 409);
+            return body;
+        }
+
+        user.setRole(req.getRole());
+        user.setPhone(req.getPhone());
         userRepository.save(user);
 
-        String authority = "ROLE_" + role.name();
+        String authority = "ROLE_" + req.getRole().name();
         long expiryMs = 1000L * 60 * 60 * 24;
         String newToken = jwtUtil.createJwt(username, authority, expiryMs);
 
@@ -72,9 +93,10 @@ public class RoleService {
         cookie.setMaxAge((int) (expiryMs / 1000));
         response.addCookie(cookie);
 
-        body.put("message", "role set");
+        body.put("message", "initial setup complete");
         body.put("username", username);
-        body.put("role", role.name());
+        body.put("role", req.getRole().name());
+        body.put("phone", req.getPhone());
         body.put("token", newToken);
         body.put("status", 200);
         return body;

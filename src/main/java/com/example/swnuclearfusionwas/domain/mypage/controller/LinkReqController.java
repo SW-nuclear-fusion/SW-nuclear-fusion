@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Tag(name = "Link", description = "시니어/보호자 연결 요청 API")
+@Tag(name = "MyPage", description = "MyPage API")
 @RestController
-@RequestMapping("/api/links")
+@RequestMapping("/api/mypage/links")
 @RequiredArgsConstructor
 public class LinkReqController {
 
