@@ -77,7 +77,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/auth/success", "/auth/signin", "/auth/signup",
                                 "/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**",
-                                "/webjars/**", "/error", "/api/auth/role").permitAll()
+                                "/webjars/**", "/error", "/api/auth/initial-setup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
