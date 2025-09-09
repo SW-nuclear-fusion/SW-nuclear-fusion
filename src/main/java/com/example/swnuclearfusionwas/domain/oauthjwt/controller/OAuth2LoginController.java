@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.headers.Header;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/oauth2")
 public class OAuth2LoginController {
 
     @Operation(
@@ -21,7 +23,7 @@ public class OAuth2LoginController {
             @ApiResponse(responseCode = "401", description = "인증되지 않음"),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생")
     })
-    @GetMapping("/oauth2/authorization/naver")
+    @GetMapping("/authorization/naver")
     public String naverLogin() {
         return "이 경로는 네이버 OAuth2 로그인 및 회원가입을 처리하는 경로입니다. Swagger에서 테스트하지 않으며, 실제 로그인/회원가입 프로세스는 Spring Security가 처리합니다.";
     }
@@ -35,7 +37,7 @@ public class OAuth2LoginController {
             @ApiResponse(responseCode = "401", description = "인증되지 않음"),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생")
     })
-    @GetMapping("/oauth2/authorization/google")
+    @GetMapping("/authorization/google")
     public String googleLogin() {
         return "이 경로는 구글 OAuth2 로그인 및 회원가입을 처리하는 경로입니다. Swagger에서 테스트하지 않으며, 실제 로그인/회원가입 프로세스는 Spring Security가 처리합니다.";
     }
@@ -49,13 +51,12 @@ public class OAuth2LoginController {
             @ApiResponse(responseCode = "401", description = "인증되지 않음"),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생")
     })
-    @GetMapping("/oauth2/authorization/kakao")
+    @GetMapping("/authorization/kakao")
     public String kakaoLogin() {
         return "이 경로는 카카오 OAuth2 로그인 및 회원가입을 처리하는 경로입니다. Swagger에서 테스트하지 않으며, 실제 로그인/회원가입 프로세스는 Spring Security가 처리합니다.";
     }
 
-
-    @Operation(summary = "OAuth2 로그인", description = "로그인 성공 후 쿠키에 JWT 토큰을 저장하고 응답으로 반환합니다.")
+    @Operation(summary = "로그인 성공 후 토큰 저장", description = "로그인 성공 후 쿠키에 JWT 토큰을 저장하고 응답으로 반환합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(description = "JWT 토큰을 쿠키에 저장한 후 반환하는 응답 객체")),
@@ -64,7 +65,7 @@ public class OAuth2LoginController {
                             description = "Authorization=<JWT 토큰>")
             )
     })
-    @GetMapping("/auth/success")
+    @GetMapping("/success")
     public void oauthSuccess() {
     }
 
