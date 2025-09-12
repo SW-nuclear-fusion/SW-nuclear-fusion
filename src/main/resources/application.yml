@@ -66,3 +66,9 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+
+webpush:
+  vapid:
+    public: BGj_bRCzIKPui3FcSY-bkVgakj8AEULFXP1Aw0K75cCoNrC0c29VvQDJiLOcpgnPRRgLk3eqOTf0MOCj3r0-yb0
+    private: HIdrRZXU13-b6hXAVAtm43JfnktEQEa0fi1Y580vQHs
+  subject: "mailto:admin@example.com"

@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head><meta charset="UTF-8"><title>Push Test</title></head>
+<body>
+<button id="btn">푸시 구독하고 서버에 등록</button>
+
+<script>
+    // localhost(HTTP) 또는 HTTPS 환경에서만 푸시 구독이 됩니다.
+    function base64UrlToUint8Array(base64Url) {
+        const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+        const base64  = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const raw     = atob(base64);
+        const out     = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+        return out;
+    }
+
+    async function ensureServiceWorkerReady() {
+        // 같은 오리진에서 /sw.js가 서빙되어야 합니다.
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready; // activated까지 대기
+        return reg;
+    }
+
+    async function subscribePush() {
+        if (!('serviceWorker' in navigator)) {
+            alert('이 브라우저는 서비스워커를 지원하지 않습니다.');
+            return;
+        }
+        // 1) 알림 권한
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') { alert('알림 권한이 필요합니다.'); return; }
+
+        // 2) SW 준비
+        const reg = await ensureServiceWorkerReady();
+
+        // 3) 서버에서 VAPID 공개키 조회
+        const keyRes = await fetch('/api/push/public-key', { credentials: 'include' });
+        if (!keyRes.ok) { alert('공개키 조회 실패'); return; }
+        const { publicKey } = await keyRes.json();
+
+        // 4) 기존 구독 재사용(있으면)
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+            sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: base64UrlToUint8Array(publicKey)
+            });
+        }
+        console.log('구독:', sub.toJSON());
+
+        // 5) 서버에 구독 저장 (toJSON()으로 바로 꺼내 쓰기)
+        const json = sub.toJSON();
+        await fetch('/api/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // 쿠키 인증 사용 시
+            body: JSON.stringify({
+                endpoint: json.endpoint,
+                p256dh: json.keys.p256dh,
+                auth: json.keys.auth
+            })
+        });
+
+        alert('구독 등록 완료!');
+    }
+
+    document.getElementById('btn').addEventListener('click', () => {
+        subscribePush().catch(err => {
+            console.error(err);
+            alert('구독 중 오류: ' + err.message);
+        });
+    });
+</script>
+</body>
+</html>
