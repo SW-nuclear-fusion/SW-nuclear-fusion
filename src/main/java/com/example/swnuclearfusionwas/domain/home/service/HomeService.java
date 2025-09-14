@@ -21,7 +21,7 @@ public class HomeService {
         UserEntity u = userQuery.getByUsernameOrThrow(username);
         UserProfile p = profileService.ensureProfile(u);
         var plants = plantRepo.findByOwner(u);
-        return HomeView.of(p, u.getUsername(), plants);
+        return HomeView.of(p, u.getName(), plants);
     }
 
     @Transactional(readOnly = true)
@@ -29,6 +29,6 @@ public class HomeService {
         UserEntity u = userQuery.getByIdOrThrow(userId);
         UserProfile p = profileService.ensureProfile(u);
         var plants = plantRepo.findByOwner(u);
-        return HomeView.of(p, u.getUsername(), plants);
+        return HomeView.of(p, u.getName(), plants);
     }
 }

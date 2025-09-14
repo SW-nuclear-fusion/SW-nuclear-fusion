@@ -12,6 +12,6 @@ public class UserDTO {
     private Long id;
     private RoleType role;
     private String name;
-    private String username;
+    private String socialname;
 
 }
