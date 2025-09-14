@@ -30,8 +30,11 @@ public class MedController {
         Cookie[] cs = req.getCookies(); if (cs==null) return null;
         String token=null; for (Cookie c: cs) if ("Authorization".equals(c.getName())) token=c.getValue();
         if (token==null || Boolean.TRUE.equals(jwtUtil.isExpired(token))) return null;
-        UserEntity u = userRepo.findByUsername(jwtUtil.getUsername(token));
-        return (u==null? null : u.getId());
+        Long userId = jwtUtil.parseUserId(token);
+
+        return userRepo.findById(userId)
+                .map(UserEntity::getId)
+                .orElse(null);
     }
 
     @PostMapping

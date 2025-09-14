@@ -55,7 +55,8 @@ public class UserService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        String token = jwtService.createToken(user.getUserId(), String.valueOf(user.getRole()));
+        String roleName = (user.getRole() == null) ? null : user.getRole().name();
+        String token = jwtService.createToken(user.getId(), roleName);
 
         return new SignInResDto(token, user.getName(), user.getRole());
     }

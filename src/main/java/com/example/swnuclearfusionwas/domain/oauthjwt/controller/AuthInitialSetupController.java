@@ -34,14 +34,14 @@ public class AuthInitialSetupController {
                     headers = @Header(name = "Set-Cookie", description = "Authorization=<새JWT>"),
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                {
-                  "message": "initial setup complete",
-                  "username": "kakao 4426578806",
-                  "role": "SENIOR",
-                  "phone": "01012345678",
-                  "token": "<new-jwt-token>"
-                }
-                """))),
+                            {
+                              "message": "initial setup complete",
+                              "id": 7,
+                              "role": "SENIOR",
+                              "phone": "01012345678",
+                              "token": "<new-jwt-token>"
+                            }
+                            """))),
             @ApiResponse(responseCode = "400", description = "유효성 오류",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
