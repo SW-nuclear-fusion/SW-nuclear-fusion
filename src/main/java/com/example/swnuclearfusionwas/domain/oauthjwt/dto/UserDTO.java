@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
 
+    @Getter
+    private Long id;
     private RoleType role;
     private String name;
     private String username;

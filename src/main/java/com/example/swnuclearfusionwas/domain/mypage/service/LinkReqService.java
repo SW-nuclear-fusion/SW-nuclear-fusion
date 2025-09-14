@@ -24,8 +24,8 @@ public class LinkReqService {
     private final JWTService jwtService;
 
     public Map<String, Object> create(CreateLinkReq in, HttpServletRequest req) {
-        String me = getUsernameFromCookie(req);
-        UserEntity meUser = userRepo.findByUsername(me);
+        Long me = getUserIdFromCookie(req);
+        UserEntity meUser = userRepo.findById(me).orElse(null);
         if (meUser == null) throw new IllegalArgumentException("요청자 계정을 찾을 수 없습니다.");
 
         boolean isGuardian = "GUARDIAN".equals(String.valueOf(meUser.getRole()));
@@ -70,8 +70,8 @@ public class LinkReqService {
     }
 
     public void accept(Long id, HttpServletRequest req) {
-        String me = getUsernameFromCookie(req);
-        UserEntity meUser = userRepo.findByUsername(me);
+        Long me = getUserIdFromCookie(req);
+        UserEntity meUser = userRepo.findById(me).orElse(null);
         if (meUser == null) throw new IllegalArgumentException("수신자 계정을 찾을 수 없습니다.");
 
         String myRole = String.valueOf(meUser.getRole());
@@ -95,8 +95,8 @@ public class LinkReqService {
     }
 
     public void reject(Long id, HttpServletRequest req) {
-        String me = getUsernameFromCookie(req);
-        UserEntity meUser = Optional.ofNullable(userRepo.findByUsername(me))
+        Long me = getUserIdFromCookie(req);
+        UserEntity meUser = userRepo.findById(me)
                 .orElseThrow(() -> new IllegalArgumentException("수신자 계정을 찾을 수 없습니다."));
 
         String myRole = String.valueOf(meUser.getRole());
@@ -116,11 +116,11 @@ public class LinkReqService {
         linkRepo.save(lr);
     }
 
-    private String getUsernameFromCookie(HttpServletRequest req) {
+    private Long getUserIdFromCookie(HttpServletRequest req) {
         String token = getCookie(req, "Authorization");
         if (token == null || token.isBlank()) throw new IllegalArgumentException("인증 토큰이 없습니다.");
         if (Boolean.TRUE.equals(jwtService.isExpired(token))) throw new IllegalArgumentException("인증 토큰이 만료되었습니다.");
-        return jwtService.parseUsername(token);
+        return jwtService.parseUserId(token);
     }
     private static String getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();

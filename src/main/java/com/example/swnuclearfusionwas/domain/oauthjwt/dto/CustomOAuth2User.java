@@ -1,6 +1,5 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.dto;
 
-import com.example.swnuclearfusionwas.domain.oauthjwt.RoleType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -40,5 +39,9 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getUsername() {
         return userDTO.getUsername();
+    }
+
+    public Long getId() {
+        return userDTO.getId();
     }
 }

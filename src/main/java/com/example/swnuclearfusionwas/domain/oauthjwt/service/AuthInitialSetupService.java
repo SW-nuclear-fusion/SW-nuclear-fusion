@@ -53,16 +53,11 @@ public class AuthInitialSetupService {
             body.put("status", 401);
             return body;
         }
-        String username = jwtUtil.getUsername(token);
-        if (username == null || username.isBlank()) {
-            body.put("error", "JWT에 username 클레임이 없습니다.");
-            body.put("status", 401);
-            return body;
-        }
 
-        UserEntity user = userRepository.findByUsername(username);
+        Long userId = jwtUtil.parseUserId(token);
+        UserEntity user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            body.put("error", "유저를 찾을 수 없습니다: " + username);
+            body.put("error", "유저를 찾을 수 없습니다: " + userId);
             body.put("status", 400);
             return body;
         }
@@ -83,9 +78,8 @@ public class AuthInitialSetupService {
         user.setPhone(req.getPhone());
         userRepository.save(user);
 
-        String authority = "ROLE_" + req.getRole().name();
         long expiryMs = 1000L * 60 * 60 * 24;
-        String newToken = jwtUtil.createJwt(username, authority, expiryMs);
+        String newToken = jwtUtil.createJwt(user.getId(), user.getRole().name(), expiryMs);
 
         Cookie cookie = new Cookie("Authorization", newToken);
         cookie.setPath("/");
@@ -94,7 +88,7 @@ public class AuthInitialSetupService {
         response.addCookie(cookie);
 
         body.put("message", "initial setup complete");
-        body.put("username", username);
+        body.put("userId", user.getId());
         body.put("role", req.getRole().name());
         body.put("phone", req.getPhone());
         body.put("token", newToken);

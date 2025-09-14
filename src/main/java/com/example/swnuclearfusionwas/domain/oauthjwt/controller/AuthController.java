@@ -66,11 +66,27 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공, JWT 토큰 반환",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SignInResDto.class)),
-                    headers = @Header(name = "Authorization", description = "<JWT 토큰>")),
+                            schema = @Schema(implementation = SignInResDto.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "accessToken": "<jwt-token>",
+                                          "name": "홍길동",
+                                          "role": "SENIOR"
+                                        }
+                                        """)
+                    ),
+                    headers = @Header(name = "Authorization", description = "JWT 토큰. " +
+                            "payload에는 { \"id\": <Long>, \"role\": <String> } 가 포함됩니다.")
+            ),
             @ApiResponse(responseCode = "401", description = "아이디 또는 비밀번호가 잘못된 경우",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(example = "{ \"accessToken\": null, \"name\": \"아이디 또는 비밀번호가 올바르지 않습니다.\", \"role\": null }"))
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "accessToken": null,
+                                          "name": "아이디 또는 비밀번호가 올바르지 않습니다.",
+                                          "role": null
+                                        }
+                                        """))
             )
     })
     @PostMapping("/signin")

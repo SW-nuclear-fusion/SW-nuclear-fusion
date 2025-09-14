@@ -62,7 +62,7 @@ public class OAuth2LoginController {
                     content = @Content(schema = @Schema(description = "JWT 토큰을 쿠키에 저장한 후 반환하는 응답 객체")),
                     headers = @Header(
                             name = "Set-Cookie",
-                            description = "Authorization=<JWT 토큰>")
+                            description = "Authorization=<JWT 토큰> (payload에 id, role 포함)")
             )
     })
     @GetMapping("/success")

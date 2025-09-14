@@ -47,10 +47,10 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtService.parseUsername(tokenValue);
+        Long userId = jwtService.parseUserId(tokenValue);
 
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Cookie cookie = new Cookie("Authorization", authToken);
