@@ -25,7 +25,7 @@ public class UserEntity {
     private String name;
 
     @Column(unique = true)
-    private String username;
+    private String socialname;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)

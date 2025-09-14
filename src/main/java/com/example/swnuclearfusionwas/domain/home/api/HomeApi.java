@@ -15,9 +15,9 @@ public class HomeApi {
     // JWT/Security 사용 시
     @GetMapping
     public HomeView me(Authentication auth){
-        String username = (auth!=null) ? auth.getName() : null;
-        if (username == null) throw new IllegalStateException("Unauthenticated");
-        return homeService.viewByUsername(username);
+        Long userId = (Long) auth.getPrincipal();
+        if (userId == null) throw new IllegalStateException("Unauthenticated");
+        return homeService.viewByUserId(userId);
     }
 
     // 파라미터로 조회
