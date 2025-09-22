@@ -74,7 +74,7 @@ public class MedService {
                         .frequencyPerDay(m.getFrequencyPerDay())
                         .alertEnabled(m.getAlertEnabled())
                         .schedules(
-                                m.getSchedules().stream()
+                                schRepo.findByMedication_IdAndActiveTrue(m.getId()).stream()
                                         .sorted(Comparator.comparing(MedSchedule::getDayOfWeek).thenComparing(MedSchedule::getTime))
                                         .map(s -> s.getDayOfWeek().name() + " " + s.getTime())
                                         .toList()
@@ -86,7 +86,7 @@ public class MedService {
     public MedDetailDto detail(Long userId, Long medId) {
         Medication m = medRepo.findByIdAndUserId(medId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("not found"));
-        List<MedSchedule> ss = schRepo.findByMedication_Id(m.getId());
+        List<MedSchedule> ss = schRepo.findByMedication_IdAndActiveTrue(m.getId());
         return MedDetailDto.builder()
                 .medId(m.getId()).name(m.getName())
                 .frequencyPerDay(m.getFrequencyPerDay())
@@ -106,11 +106,8 @@ public class MedService {
         if (req.getFrequencyPerDay()!=null) m.setFrequencyPerDay(req.getFrequencyPerDay());
         if (req.getTimes()!=null || req.getEveryDay()!=null || req.getDaysOfWeek()!=null) {
 
-            eventRepo.deleteAllByMedId(m.getId());
-            schRepo.deleteAllByMedId(m.getId());
-
             int freq = (req.getFrequencyPerDay()!=null) ? req.getFrequencyPerDay() : m.getFrequencyPerDay();
-            List<String> times = (req.getTimes()!=null) ? req.getTimes() : List.of();
+            List<String> times = (req.getTimes()!=null) ? req.getTimes() : Collections.emptyList();
             if (times.size()!=freq)
                 throw new IllegalArgumentException("times length must equal frequencyPerDay");
 
@@ -120,14 +117,52 @@ public class MedService {
                     : new LinkedHashSet<>(Optional.ofNullable(req.getDaysOfWeek())
                     .orElseThrow(() -> new IllegalArgumentException("daysOfWeek required when everyDay=false")));
 
-            for (DayOfWeek d : days) {
-                for (String t : times) {
-                    schRepo.save(MedSchedule.builder()
-                            .medication(m)
-                            .dayOfWeek(d)
-                            .time(parseTime(t))
-                            .build());
+            record Key(DayOfWeek d, LocalTime t) {}
+            LinkedHashSet<Key> target = new LinkedHashSet<>();
+            for (DayOfWeek d : days) for (String t : times) target.add(new Key(d, LocalTime.parse(t)));
+
+            List<MedSchedule> existing = schRepo.findByMedication_IdAndActiveTrue(m.getId());
+            Map<Key, MedSchedule> existMap = new HashMap<>();
+            for (MedSchedule s : existing) existMap.put(new Key(s.getDayOfWeek(), s.getTime()), s);
+
+            Set<Key> current = new LinkedHashSet<>(existMap.keySet());
+            Set<Key> keep = new LinkedHashSet<>(current); keep.retainAll(target);
+            LinkedHashSet<Key> toDelete = new LinkedHashSet<>(current); toDelete.removeAll(keep);
+            LinkedHashSet<Key> toAdd    = new LinkedHashSet<>(target);  toAdd.removeAll(keep);
+
+            Iterator<Key> delIt = toDelete.iterator();
+            Iterator<Key> addIt = toAdd.iterator();
+            while (delIt.hasNext() && addIt.hasNext()) {
+                Key from = delIt.next();
+                Key to   = addIt.next();
+                MedSchedule s = existMap.get(from);
+                s.setDayOfWeek(to.d());
+                s.setTime(to.t());
+                delIt.remove();
+                addIt.remove();
+            }
+
+            for (Key k : toAdd) {
+                schRepo.save(MedSchedule.builder()
+                        .medication(m)
+                        .dayOfWeek(k.d())
+                        .time(k.t())
+                        .active(true)
+                        .build());
+            }
+
+            List<Long> deletableIds = new ArrayList<>();
+            for (Key k : toDelete) {
+                MedSchedule s = existMap.get(k);
+                boolean hasEvents = eventRepo.existsBySchedule_Id(s.getId());
+                if (hasEvents) {
+                    s.setActive(false);
+                } else {
+                    deletableIds.add(s.getId());
                 }
+            }
+            if (!deletableIds.isEmpty()) {
+                schRepo.deleteAllByIdInBatch(deletableIds);
             }
         }
     }
