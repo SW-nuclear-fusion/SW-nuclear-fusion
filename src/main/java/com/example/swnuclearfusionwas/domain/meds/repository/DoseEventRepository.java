@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface DoseEventRepository extends JpaRepository<DoseEvent, Long> {
     Optional<DoseEvent> findByScheduleAndDate(MedSchedule schedule, LocalDate date);
+    boolean existsBySchedule_Id(Long scheduleId);
 
     @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
