@@ -18,6 +18,8 @@ public interface MedScheduleRepository extends JpaRepository<MedSchedule, Long> 
 
     List<MedSchedule> findByMedication_IdAndActiveTrue(Long medId);
 
+    List<MedSchedule> findByDayOfWeekAndTimeAndActive(DayOfWeek dayOfWeek, LocalTime time, boolean active);
+
     @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from MedSchedule s where s.medication.id = :medId")

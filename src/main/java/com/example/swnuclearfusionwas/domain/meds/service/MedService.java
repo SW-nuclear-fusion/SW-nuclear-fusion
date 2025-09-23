@@ -59,6 +59,7 @@ public class MedService {
                         .medication(med)
                         .dayOfWeek(d)
                         .time(parseTime(t))
+                        .active(true)
                         .build());
             }
         }
@@ -105,9 +106,14 @@ public class MedService {
         if (req.getName()!=null) m.setName(req.getName());
         if (req.getFrequencyPerDay()!=null) m.setFrequencyPerDay(req.getFrequencyPerDay());
         if (req.getTimes()!=null || req.getEveryDay()!=null || req.getDaysOfWeek()!=null) {
+            List<MedSchedule> oldSchedules = schRepo.findByMedication_IdAndActiveTrue(m.getId());
+            for (MedSchedule sch : oldSchedules) {
+                sch.setActive(false);
+                schRepo.save(sch);
+            }
 
             int freq = (req.getFrequencyPerDay()!=null) ? req.getFrequencyPerDay() : m.getFrequencyPerDay();
-            List<String> times = (req.getTimes()!=null) ? req.getTimes() : Collections.emptyList();
+            List<String> times = (req.getTimes()!=null) ? req.getTimes() : List.of();
             if (times.size()!=freq)
                 throw new IllegalArgumentException("times length must equal frequencyPerDay");
 
@@ -117,53 +123,19 @@ public class MedService {
                     : new LinkedHashSet<>(Optional.ofNullable(req.getDaysOfWeek())
                     .orElseThrow(() -> new IllegalArgumentException("daysOfWeek required when everyDay=false")));
 
-            record Key(DayOfWeek d, LocalTime t) {}
-            LinkedHashSet<Key> target = new LinkedHashSet<>();
-            for (DayOfWeek d : days) for (String t : times) target.add(new Key(d, LocalTime.parse(t)));
-
-            List<MedSchedule> existing = schRepo.findByMedication_IdAndActiveTrue(m.getId());
-            Map<Key, MedSchedule> existMap = new HashMap<>();
-            for (MedSchedule s : existing) existMap.put(new Key(s.getDayOfWeek(), s.getTime()), s);
-
-            Set<Key> current = new LinkedHashSet<>(existMap.keySet());
-            Set<Key> keep = new LinkedHashSet<>(current); keep.retainAll(target);
-            LinkedHashSet<Key> toDelete = new LinkedHashSet<>(current); toDelete.removeAll(keep);
-            LinkedHashSet<Key> toAdd    = new LinkedHashSet<>(target);  toAdd.removeAll(keep);
-
-            Iterator<Key> delIt = toDelete.iterator();
-            Iterator<Key> addIt = toAdd.iterator();
-            while (delIt.hasNext() && addIt.hasNext()) {
-                Key from = delIt.next();
-                Key to   = addIt.next();
-                MedSchedule s = existMap.get(from);
-                s.setDayOfWeek(to.d());
-                s.setTime(to.t());
-                delIt.remove();
-                addIt.remove();
-            }
-
-            for (Key k : toAdd) {
-                schRepo.save(MedSchedule.builder()
-                        .medication(m)
-                        .dayOfWeek(k.d())
-                        .time(k.t())
-                        .active(true)
-                        .build());
-            }
-
-            List<Long> deletableIds = new ArrayList<>();
-            for (Key k : toDelete) {
-                MedSchedule s = existMap.get(k);
-                boolean hasEvents = eventRepo.existsBySchedule_Id(s.getId());
-                if (hasEvents) {
-                    s.setActive(false);
-                } else {
-                    deletableIds.add(s.getId());
+            List<MedSchedule> newSchedules = new java.util.ArrayList<>();
+            for (DayOfWeek d : days) {
+                for (String t : times) {
+                    MedSchedule sch = schRepo.save(MedSchedule.builder()
+                            .medication(m)
+                            .dayOfWeek(d)
+                            .time(parseTime(t))
+                            .active(true)
+                            .build());
+                    newSchedules.add(sch);
                 }
             }
-            if (!deletableIds.isEmpty()) {
-                schRepo.deleteAllByIdInBatch(deletableIds);
-            }
+            // dose_event는 push 알림 발송 시점에만 생성 (여기서는 생성하지 않음)
         }
     }
 
