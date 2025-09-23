@@ -32,10 +32,11 @@ public class AlertService {
     }
 
     @Transactional
-    public void complete(Long userId, Long eventId, ZoneId zoneId) {
+    public void complete(Long userId, Long eventId) {
         DoseEvent ev = eventRepo.findById(eventId).orElseThrow(() -> new IllegalArgumentException("event not found"));
-        if (!ev.getSchedule().getMedication().getUserId().equals(userId)) throw new IllegalArgumentException("forbidden");
+        if (!ev.getSchedule().getMedication().getUserId().equals(userId))
+            throw new IllegalArgumentException("forbidden");
         ev.setTaken(true);
-        ev.setTakenAt(OffsetDateTime.now(zoneId));
+        ev.setTakenAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")));
     }
 }

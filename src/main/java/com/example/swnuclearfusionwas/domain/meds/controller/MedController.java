@@ -87,7 +87,7 @@ public class MedController {
     public ResponseEntity<?> complete(@RequestBody AlertCompleteReq req, HttpServletRequest request) {
         Long uid = currentUserId(request);
         if (uid==null) return ResponseEntity.status(401).body("{\"error\":\"unauthorized\"}");
-        alertService.complete(uid, req.getEventId(), ZoneId.of("Asia/Seoul"));
+        alertService.complete(uid, req.getEventId());
         return ResponseEntity.ok(Map.of("eventId", req.getEventId(), "taken", true));
     }
 

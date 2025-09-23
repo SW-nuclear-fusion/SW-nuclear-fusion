@@ -32,7 +32,7 @@ public class PushScheduler {
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         LocalDate today = now.toLocalDate();
 
-        List<MedSchedule> schedules = medScheduleRepo.findByDayOfWeekAndTime(dayOfWeek, currentTime);
+        List<MedSchedule> schedules = medScheduleRepo.findByDayOfWeekAndTimeAndActive(dayOfWeek, currentTime, true);
         if (schedules.isEmpty()) return;
 
         for (MedSchedule schedule : schedules) {

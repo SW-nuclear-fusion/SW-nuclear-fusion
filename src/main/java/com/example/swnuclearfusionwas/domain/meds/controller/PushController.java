@@ -43,13 +43,16 @@ public class PushController {
         Long userId = currentUserId(request);
         if (userId == null) return ResponseEntity.status(401).body("{\"error\":\"unauthorized\"}");
 
-        PushSubscription sub = PushSubscription.builder()
-                .userId(userId)
-                .endpoint(req.getEndpoint())
-                .p256dh(req.getP256dh())
-                .auth(req.getAuth())
-                .build();
-        pushRepo.save(sub);
+        boolean exists = pushRepo.findByUserIdAndEndpoint(userId, req.getEndpoint()).isPresent();
+        if (!exists) {
+            PushSubscription sub = PushSubscription.builder()
+                    .userId(userId)
+                    .endpoint(req.getEndpoint())
+                    .p256dh(req.getP256dh())
+                    .auth(req.getAuth())
+                    .build();
+            pushRepo.save(sub);
+        }
         return ResponseEntity.ok().body("subscribed");
     }
 }
