@@ -1,6 +1,5 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.entity;
 
-import com.example.swnuclearfusionwas.domain.oauthjwt.RoleType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,13 +24,8 @@ public class UserEntity {
     private String name;
 
     @Column(unique = true)
-    private String socialname;
+    private String username;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
-    private RoleType role;
-
-    @Column(unique = true)
-    private String phone;
+    private String role;
 
 }

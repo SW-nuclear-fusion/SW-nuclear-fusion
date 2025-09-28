@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/home")
 @RequiredArgsConstructor
 public class HomeApi {
-    private final HomeService homeService;
 
-    // JWT/Security 사용 시
+    private final HomeService home;
+
+    /** 인증 사용자 본인의 홈 요약 */
     @GetMapping
     public HomeView me(Authentication auth){
-        Long userId = (Long) auth.getPrincipal();
-        if (userId == null) throw new IllegalStateException("Unauthenticated");
-        return homeService.viewByUserId(userId);
+        if (auth == null || auth.getName() == null) throw new IllegalStateException("Unauthenticated");
+        return home.summaryByUsername(auth.getName());
     }
 
-    // 파라미터로 조회
-    @GetMapping(params = "userId")
-    public HomeView byId(@RequestParam Long userId){
-        return homeService.viewByUserId(userId);
+    /** 디버그/관리용: username으로 조회 */
+    @GetMapping(params = "username")
+    public HomeView byUsername(@RequestParam String username){
+        return home.summaryByUsername(username);
     }
 }

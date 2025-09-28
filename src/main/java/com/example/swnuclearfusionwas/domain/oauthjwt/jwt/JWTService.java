@@ -11,16 +11,15 @@ public class JWTService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String createToken(Long userId, String roleName) {
-        return jwtUtil.createJwt(userId, roleName, 24L * 60 * 60 * 1000); // 24h
+    public String createToken(String username, String role) {
+        return jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
+    }
+
+    public Long parseUserId(String token) {
+        return jwtUtil.parseUserId(token);
     }
 
     public Boolean isExpired(String token) {
         return jwtUtil.isExpired(token);
     }
-
-    public Long parseUserId(String token) { return jwtUtil.parseUserId(token); }
-
-    public String parseRole(String token) { return jwtUtil.parseRole(token); }
-
 }

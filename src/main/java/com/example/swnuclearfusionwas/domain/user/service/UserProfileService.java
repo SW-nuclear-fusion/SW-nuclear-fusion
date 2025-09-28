@@ -7,18 +7,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class UserProfileService {
+
     private final UserProfileRepository profileRepo;
 
     @Transactional
-    public UserProfile ensureProfile(UserEntity u){
-        return profileRepo.findByUser(u).orElseGet(() -> {
-            UserProfile p = new UserProfile();
-            p.setUser(u);
-            p.setLevel(1);
-            p.setPoints(0);
-            p.setSeedsOwned(1); //임의값
+    public UserProfile ensureProfile(UserEntity user) {
+        return profileRepo.findByUser(user).orElseGet(() -> {
+            var p = new UserProfile();
+            p.setUser(user);
             return profileRepo.save(p);
         });
     }
