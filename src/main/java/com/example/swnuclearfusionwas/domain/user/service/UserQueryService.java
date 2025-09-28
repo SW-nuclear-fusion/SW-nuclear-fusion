@@ -20,6 +20,12 @@ public class UserQueryService {
         return u;
     }
 
+    // userid로 조회
+    public UserEntity getByUserIdOrThrow(String userId) {
+        return userRepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found by userId: " + userId));
+    }
+
     // pk로 조회
     public UserEntity getByIdOrThrow(Long id) {
         return userRepo.findById(id)
