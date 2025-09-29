@@ -18,4 +18,7 @@ public class UserProfile {
     private int points = 0;
     private int seedsOwned = 0;
     private LocalDate joinedAt = LocalDate.now();
+
+    // 매월 1일 씨앗 지급 중복 방지
+    private LocalDate lastMonthlySeedAt;
 }

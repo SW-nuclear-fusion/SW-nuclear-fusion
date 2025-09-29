@@ -1,7 +1,7 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.oauth2;
 
 import com.example.swnuclearfusionwas.domain.oauthjwt.dto.CustomOAuth2User;
-import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTService;
+import com.example.swnuclearfusionwas.domain.oauthjwt.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,34 +12,45 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JWTService jwtService;
+    private final JWTUtil jwtUtil;
 
-    public CustomSuccessHandler(JWTService jwtService) {
-        this.jwtService = jwtService;
+    public CustomSuccessHandler(JWTUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
+        CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        Long userId = principal.getId();
-        String roleName = principal.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority) // "ROLE_SENIOR" 같은 값
-                .map(a -> a.startsWith("ROLE_") ? a.substring(5) : a)
-                .orElse(null);
+        String username = customUserDetails.getUsername();
 
-        String token = jwtService.createToken(userId, roleName);
-        Cookie cookie = new Cookie("Authorization", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
-        response.addCookie(cookie);
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+
+        response.addCookie(createCookie("Authorization", token));
 
     }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(60*60*60);;
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
+
+
 }
