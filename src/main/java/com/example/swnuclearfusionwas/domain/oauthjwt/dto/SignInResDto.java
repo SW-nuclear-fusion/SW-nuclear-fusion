@@ -1,5 +1,6 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.dto;
 
+import com.example.swnuclearfusionwas.domain.oauthjwt.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ public class SignInResDto {
 
     private String accessToken;
     private String name;
-    private String role;
+    private RoleType role;
 
 }

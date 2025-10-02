@@ -79,7 +79,7 @@ public class AuthInitialSetupService {
         userRepository.save(user);
 
         long expiryMs = 1000L * 60 * 60 * 24;
-        String newToken = jwtUtil.createJwt(user.getUserId(), user.getRole(), expiryMs);
+        String newToken = jwtUtil.createJwt(user.getId(), user.getRole().name(), expiryMs);
 
         Cookie cookie = new Cookie("Authorization", newToken);
         cookie.setPath("/");
@@ -88,7 +88,7 @@ public class AuthInitialSetupService {
         response.addCookie(cookie);
 
         body.put("message", "initial setup complete");
-        body.put("userId", user.getId());
+        body.put("id", user.getId());
         body.put("role", req.getRole());
         body.put("phone", req.getPhone());
         body.put("token", newToken);

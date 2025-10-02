@@ -1,5 +1,6 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.jwt;
 
+import com.example.swnuclearfusionwas.domain.oauthjwt.RoleType;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,8 +12,8 @@ public class JWTService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String createToken(String username, String role) {
-        return jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
+    public String createToken(Long id, String roleName) {
+        return jwtUtil.createJwt(id, roleName, 60 * 60 * 1000L);
     }
 
     public Long parseUserId(String token) {

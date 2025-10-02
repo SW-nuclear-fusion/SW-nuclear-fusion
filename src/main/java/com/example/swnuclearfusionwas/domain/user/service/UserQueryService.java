@@ -13,7 +13,7 @@ public class UserQueryService {
 
     // username으로 조회
     public UserEntity getByUsernameOrThrow(String username) {
-        UserEntity u = userRepo.findByUsername(username);
+        UserEntity u = userRepo.findByName(username);
         if (u == null) {
             throw new IllegalArgumentException("user not found by username: " + username);
         }

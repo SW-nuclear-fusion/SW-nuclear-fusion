@@ -31,7 +31,7 @@ public class HomeService {
         var itemRows = inventory.listItems(u).stream().map(ItemRow::from).toList();
 
         return new HomeView(
-                u.getUsername(),
+                u.getName(),
                 p.getLevel(),
                 p.getPoints(),
                 PlantDto.of(active),
