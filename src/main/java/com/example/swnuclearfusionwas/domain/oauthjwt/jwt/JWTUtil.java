@@ -1,5 +1,6 @@
 package com.example.swnuclearfusionwas.domain.oauthjwt.jwt;
 
+import com.example.swnuclearfusionwas.domain.oauthjwt.RoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,39 +20,37 @@ public class JWTUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
-    }
-
-    public String getRole(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
-    }
-
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String username, String role, Long expiredMs) {
+    public String createJwt(Long id, String role, Long expiredMs) {
+            return Jwts.builder()
+                    .claim("id", id)     // 여기에는 DB PK id
+                    .claim("role", role)     // enum -> String
+                    .issuedAt(new Date())
+                    .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                    .signWith(secretKey)
+                    .compact();
+    }
 
-        return Jwts.builder()
-                .claim("username", username)
-                .claim("role", role)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
-                .signWith(secretKey)
-                .compact();
+    public String getId(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)  // ✅ 여기 secretKey
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("id", String.class);
     }
 
     public Long parseUserId(String token) {
-        return Long.valueOf(parseToken(token).getSubject());
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload().get("id", Number.class).longValue();
     }
 
-    private Claims parseToken(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    public String parseRole(String token) {
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
 }

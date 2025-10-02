@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Transactional
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -43,38 +45,28 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByUsername(username);
+        String socialname = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        Optional<UserEntity> existOpt = userRepository.findBySocialname(socialname);
 
-        if (existData == null){
-
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername(username);
+        UserEntity userEntity;
+        if (existOpt.isEmpty()) {
+            userEntity = new UserEntity();
+            userEntity.setSocialname(socialname);
             userEntity.setName(oAuth2Response.getName());
-            userEntity.setRole("ROLE_USER");
-
+            userEntity.setRole(null);
             userRepository.save(userEntity);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole("ROLE_USER");
-
-            return new CustomOAuth2User(userDTO);
+        } else {
+            userEntity = existOpt.get();
+            userEntity.setName(oAuth2Response.getName());
+            userRepository.save(userEntity);
         }
-        else {
 
-            existData.setName(oAuth2Response.getName());
-
-            userRepository.save(existData);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(existData.getUsername());
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(existData.getRole());
-
-            return new CustomOAuth2User(userDTO);
-        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userEntity.getId());
+        userDTO.setSocialname(socialname);
+        userDTO.setName(oAuth2Response.getName());
+        userDTO.setRole(userEntity.getRole());
+        return new CustomOAuth2User(userDTO);
 
     }
 
