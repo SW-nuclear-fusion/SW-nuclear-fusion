@@ -28,7 +28,11 @@ const HomePage = () => {
           return;
         }
 
+<<<<<<< HEAD
+        const response = await axios.get('http://43.201.68.38:8080/api/user/me', {
+=======
         const response = await axios.get('http://localhost:8080/api/user/me', {
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
           headers: { Authorization: `Bearer ${token}` }
         });
 

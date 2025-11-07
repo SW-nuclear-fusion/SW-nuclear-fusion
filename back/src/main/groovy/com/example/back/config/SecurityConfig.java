@@ -4,12 +4,18 @@ import com.example.back.oauth.CustomOAuth2UserService;
 import com.example.back.oauth.OAuth2SuccessHandler;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+<<<<<<< HEAD
+=======
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+<<<<<<< HEAD
+=======
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +44,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+<<<<<<< HEAD
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",  // 로컬 개발용
+                "http://43.201.68.38:8080"      // EC2 서버 IP (8080 포트를 안 쓴다면 포트번호 제외)
+        ));
+=======
         config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 프론트엔드 주소
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
@@ -52,6 +65,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+<<<<<<< HEAD
+                .csrf(csrf -> csrf.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // 경로별 접근 권한 설정
+        http
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // React 정적 파일 및 루트 경로 허용
+                        .requestMatchers("/", "/index.html", "/assets/**", "/static/**", "/*.ico", "/*.json", "/*.png").permitAll()
+                        .requestMatchers("/{path:[^\\.]*}", "/**/{path:[^\\.]*}").permitAll()
+                        .requestMatchers("/login/oauth2/**").permitAll()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .anyRequest().authenticated()
+                );
+
+        // OAuth2 로그인 설정
+=======
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(PathRequest.toH2Console())
                         .disable()
@@ -78,6 +112,7 @@ public class SecurityConfig {
                 );
 
         // OAuth2 로그인 설정 (기존과 동일)
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         http
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
@@ -85,6 +120,10 @@ public class SecurityConfig {
                         .successHandler(oAuth2SuccessHandler)
                 );
 
+<<<<<<< HEAD
+        // JWT 필터 추가
+=======
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

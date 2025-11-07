@@ -5,7 +5,11 @@ import AuthLayout from '../components/auth/AuthLayout'; // 레이아웃 재사�
 
 // API 호출을 위한 기본 axios 인스턴스 (헤더 자동 포함)
 const api = axios.create({
+<<<<<<< HEAD
+    baseURL: 'http://43.201.68.38:8080',
+=======
     baseURL: 'http://localhost:8080',
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
     headers: { 'Content-Type': 'application/json' }
 });
 api.interceptors.request.use(config => {

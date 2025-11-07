@@ -31,7 +31,11 @@ export default function PlantConfirmationPage() {
 
       // 백엔드 API 호출 (식물 정보 저장)
       const response = await axios.post(
+<<<<<<< HEAD
+        'http://43.201.68.38:8080/api/user/plant', // 백엔드 주소 확인!
+=======
         'http://localhost:8080/api/user/plant', // 백엔드 주소 확인!
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         { plantColor: color, plantName: name },
         { headers: { Authorization: `Bearer ${token}` } }
       );

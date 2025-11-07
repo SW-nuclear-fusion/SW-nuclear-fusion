@@ -26,8 +26,13 @@ const AlarmPage = () => {
       }
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const [alarmRes, userRes] = await Promise.all([
+<<<<<<< HEAD
+        axios.get('http://43.201.68.38:8080/api/user/alarms', config),
+        axios.get('http://43.201.68.38:8080/api/user/me', config)
+=======
         axios.get('http://localhost:8080/api/user/alarms', config),
         axios.get('http://localhost:8080/api/user/me', config)
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
       ]);
 
       setAlarms(alarmRes.data);
@@ -58,7 +63,11 @@ const AlarmPage = () => {
           const token = localStorage.getItem('accessToken');
           if (!token) return;
           const response = await axios.get(
+<<<<<<< HEAD
+              `http://43.201.68.38:8080/api/user/alarms/checked?date=${dateString}`,
+=======
               `http://localhost:8080/api/user/alarms/checked?date=${dateString}`,
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
               { headers: { Authorization: `Bearer ${token}` } }
           );
 
