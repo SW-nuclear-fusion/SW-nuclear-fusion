@@ -39,7 +39,7 @@ const PlantStatusCard = ({ userInfo, setUserInfo, className }) => {
       if (!token) throw new Error('로그인 토큰을 찾을 수 없습니다.');
 
       const response = await axios.post(
-        'http://localhost:8080/api/user/plant/water',
+        'http://43.201.68.38:8080/api/user/plant/water',
         null,
         {
           headers: {
@@ -63,7 +63,7 @@ const PlantStatusCard = ({ userInfo, setUserInfo, className }) => {
       if (!token) throw new Error('로그인 토큰을 찾을 수 없습니다.');
 
       const response = await axios.post(
-        'http://localhost:8080/api/user/plant/affection',
+        'http://43.201.68.38:8080/api/user/plant/affection',
         null,
         {
           headers: {

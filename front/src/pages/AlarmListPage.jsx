@@ -28,8 +28,8 @@ export default function AlarmListPage() {
       if (!token) { navigate('/login'); return; }
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const [alarmRes, userRes] = await Promise.all([
-        axios.get('http://localhost:8080/api/user/alarms', config),
-        axios.get('http://localhost:8080/api/user/me', config)
+        axios.get('http://43.201.68.38:8080/api/user/alarms', config),
+        axios.get('http://43.201.68.38:8080/api/user/me', config)
       ]);
       setAlarms(alarmRes.data);
       setUserInfo(userRes.data);
@@ -57,7 +57,7 @@ export default function AlarmListPage() {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('토큰 없음');
       await axios.patch( // PATCH API 호출
-        `http://localhost:8080/api/user/alarms/${alarmId}/toggle`, null,
+        `http://43.201.68.38:8080/api/user/alarms/${alarmId}/toggle`, null,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(`Alarm ${alarmId} toggled successfully.`);
@@ -79,7 +79,7 @@ export default function AlarmListPage() {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('토큰 없음');
       await axios.delete( // DELETE API 호출
-        `http://localhost:8080/api/user/alarms/${alarmId}`,
+        `http://43.201.68.38:8080/api/user/alarms/${alarmId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(`Alarm ${alarmId} deleted successfully.`);

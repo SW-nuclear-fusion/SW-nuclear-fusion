@@ -5,7 +5,7 @@ import MyPageCalendar from '../components/mypage/MyPageCalendar'; // 방금 만�
 
 // API 호출용 (토큰 자동 포함)
 const api = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://43.201.68.38:8080',
     headers: { 'Content-Type': 'application/json' }
 });
 api.interceptors.request.use(config => {
@@ -49,7 +49,7 @@ export default function MyPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.get(`http://localhost:8080/api/mypage/monthly-data?year=${year}&month=${month}`);
+      const response = await api.get(`http://43.201.68.38:8080/api/mypage/monthly-data?year=${year}&month=${month}`);
       console.log(response.data);
       if (Array.isArray(response.data)) {
         // 1. 백엔드가 배열(List)을 반환한 경우 (기존 코드)

@@ -14,7 +14,7 @@ export default function LoginPage() {
     const loginData = { userId, password };
 
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', loginData);
+      const response = await axios.post('http://43.201.68.38:8080/api/auth/login', loginData);
       console.log(response);
       const token = response.data.accessToken;
       localStorage.setItem('accessToken', token);

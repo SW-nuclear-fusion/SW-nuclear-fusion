@@ -28,7 +28,7 @@ const HomePage = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:8080/api/user/me', {
+        const response = await axios.get('http://43.201.68.38:8080/api/user/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
 

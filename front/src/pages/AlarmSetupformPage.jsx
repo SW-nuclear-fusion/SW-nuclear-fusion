@@ -86,7 +86,7 @@ export default function AlarmSetupFormPage() {
 
       console.log("Saving new alarms:", alarmsToSave);
       const response = await axios.post(
-        'http://localhost:8080/api/user/alarms',
+        'http://43.201.68.38:8080/api/user/alarms',
         alarmsToSave, // DTO 리스트 전송
         { headers: { Authorization: `Bearer ${token}` } }
       );

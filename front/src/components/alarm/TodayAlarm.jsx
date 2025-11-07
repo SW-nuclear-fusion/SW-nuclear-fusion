@@ -70,7 +70,7 @@ const TodayAlarm = ({ alarms = [], selectedDate, userInfo, setUserInfo, checkedA
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('토큰 없음');
       const response = await axios.post(
-        `http://localhost:8080/api/user/alarms/${alarmId}/check`, null,
+        `http://43.201.68.38:8080/api/user/alarms/${alarmId}/check`, null,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const updatedUserInfo = response.data;

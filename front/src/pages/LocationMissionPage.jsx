@@ -5,7 +5,7 @@ import AuthLayout from '../components/auth/AuthLayout';
 import { FaMapMarkerAlt, FaSpinner } from 'react-icons/fa';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://43.201.68.38:8080',
     headers: { 'Content-Type': 'application/json' }
 });
 api.interceptors.request.use(config => {
