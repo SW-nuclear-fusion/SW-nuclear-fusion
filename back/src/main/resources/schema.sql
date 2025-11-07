@@ -186,3 +186,15 @@ CREATE TABLE IF NOT EXISTS daily_moods (
     CONSTRAINT UQ_USER_MOOD_DATE UNIQUE (user_id, mood_date) -- (한 유저는 하루에 하나의 감정만 기록)
     );
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+
+-- 11. 보호자(케어기버)가 시니어 정보를 열람한 기록 테이블
+-- MySQL (AWS RDS)용 문법
+CREATE TABLE IF NOT EXISTS senior_view_log (
+                                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                               caregiver_id BIGINT NOT NULL,
+                                               senior_id BIGINT NOT NULL,
+                                               viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                               INDEX idx_caregiver_id (caregiver_id),
+    INDEX idx_senior_id (senior_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
