@@ -7,7 +7,11 @@ import logo from '../assets/logo.png';
 export default function WelcomePage() {
   const navigate = useNavigate();
   const { formData } = useSignup();
+<<<<<<< HEAD
   const API_BASE_URL = 'http://43.201.68.38:8080';
+=======
+  const API_BASE_URL = 'http://localhost:8080';
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
 
   // [!] 회원가입 API 호출 및 후속 처리 함수
   const handleSignupAndProceed = async (nextPath) => {

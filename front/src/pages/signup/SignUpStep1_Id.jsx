@@ -25,7 +25,11 @@ export default function SignUpStep1_Id() {
   const handleIdCheck = async () => {
     if (!localData.id) return alert('아이디를 입력하세요.');
     try {
+<<<<<<< HEAD
       const response = await axios.get('http://43.201.68.38:8080/api/auth/check-id', {
+=======
+      const response = await axios.get('http://localhost:8080/api/auth/check-id', {
+>>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         params: {
           id: localData.id
         }
