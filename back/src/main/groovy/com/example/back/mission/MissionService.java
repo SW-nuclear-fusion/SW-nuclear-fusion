@@ -38,6 +38,17 @@ public class MissionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<QuizQuestionDto> getPracticeQuizByCategory(String category) {
+        // 1. 레포지토리에서 카테고리별 랜덤 5개 퀴즈 조회
+        List<QuizQuestion> questions = quizQuestionRepository.findRandomQuestionsByCategory(category);
+
+        // 2. DTO로 변환
+        return questions.stream()
+                .map(QuizQuestionDto::new) // (QuizQuestionDto가 QuizQuestion을 인자로 받는 생성자 필요)
+                .collect(Collectors.toList());
+    }
+
     /** 퀴즈 답안 제출 및 채점 */
     @Transactional
     public QuizResultDto submitQuiz(String userId, List<QuizAnswerDto> answers) {

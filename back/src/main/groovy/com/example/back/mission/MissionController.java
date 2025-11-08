@@ -35,6 +35,18 @@ public class MissionController {
         }
     }
 
+    @GetMapping("/quiz/practice")
+    public ResponseEntity<?> getPracticeQuiz(@RequestParam("category") String category) {
+        try {
+            // "연습 퀴즈"는 보상이나 횟수 제한이 없으므로, ID가 필요 없음.
+            List<QuizQuestionDto> quiz = missionService.getPracticeQuizByCategory(category);
+            return ResponseEntity.ok(quiz);
+        } catch (Exception e) {
+            // (e.g., category가 잘못된 경우)
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     /** 퀴즈: 답안 제출 (POST /api/missions/quiz/submit) */
     @PostMapping("/quiz/submit")
     public ResponseEntity<?> submitQuiz(@RequestBody List<QuizAnswerDto> answers) {

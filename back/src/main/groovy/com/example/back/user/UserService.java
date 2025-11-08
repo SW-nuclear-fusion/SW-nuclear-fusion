@@ -92,11 +92,7 @@ public class UserService {
 
         // 정시 복용 확인 로직
         LocalTime scheduledTime = alarm.getNotificationTime(); // 알람 설정 시간
-<<<<<<< HEAD
         LocalTime currentTime = LocalTime.now().plusHours(9); // 현재 시간
-=======
-        LocalTime currentTime = LocalTime.now(); // 현재 시간
->>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
         long gracePeriodMinutes = 30;
 
         LocalTime lowerBound = scheduledTime.minusMinutes(gracePeriodMinutes);
@@ -118,11 +114,8 @@ public class UserService {
         }
 
         if (isTooEarly) {
-<<<<<<< HEAD
             System.out.println("User " + userId + " tried to check alarm " + alarmId + " too early." + "체크 시간" + currentTime);
-=======
             System.out.println("User " + userId + " tried to check alarm " + alarmId + " too early.");
->>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
             throw new IllegalArgumentException("아직 복약할 시간이 아닙니다.");
         }
 
