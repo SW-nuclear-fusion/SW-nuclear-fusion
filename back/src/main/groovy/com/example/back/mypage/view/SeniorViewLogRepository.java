@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SeniorViewLogRepository extends JpaRepository<SeniorViewLog, Long> {
     long countByCaregiverIdAndSeniorId(Long caregiverId, Long seniorId);
+    long countBySeniorId(Long seniorId);
 }
 
