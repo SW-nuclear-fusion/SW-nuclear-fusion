@@ -28,5 +28,11 @@ public class SeniorViewLogService {
                 .build();
         return repository.save(log);
     }
+
+    @Transactional(readOnly = true)
+    public long getTotalViewCountForSenior(Long seniorId) {
+        if (seniorId == null) return 0L;
+        return repository.countBySeniorId(seniorId);
+    }
 }
 
