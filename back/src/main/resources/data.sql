@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- MySQL 데이터베이스 문법 기준
 
 -- 1. 사용자 데이터 (테스트용)
@@ -11,6 +12,8 @@ VALUES (
            'test',
            '01022341234',
 =======
+=======
+>>>>>>> 1e287e9 (demo v1)
 -- H2 데이터베이스 문법 기준
 
 -- 1. 사용자 데이터 (테스트용)
@@ -20,7 +23,10 @@ VALUES (
            '$2a$10$IEChcIqOTxkRsaO47XEMJ.LMQkyNR2PZfGxk6ddiYNJp7l2wlG/fC', -- '1234'의 해시
            'test',
            '01012341234',
+<<<<<<< HEAD
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+>>>>>>> 1e287e9 (demo v1)
            'SENIOR',
            '기본',
            '2001-01-01',
@@ -29,6 +35,7 @@ VALUES (
            '퍼렁',
            15,
            10,
+<<<<<<< HEAD
 <<<<<<< HEAD
            100
        );
@@ -122,6 +129,8 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 =======
+=======
+>>>>>>> 1e287e9 (demo v1)
            10
        );
 
@@ -190,4 +199,7 @@ ALTER TABLE alarm_check_logs ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FR
 ALTER TABLE quiz_attempts ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM quiz_attempts);
 ALTER TABLE daily_moods ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM daily_moods);
 
+<<<<<<< HEAD
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+>>>>>>> 1e287e9 (demo v1)

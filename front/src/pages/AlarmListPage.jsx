@@ -29,12 +29,17 @@ export default function AlarmListPage() {
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const [alarmRes, userRes] = await Promise.all([
 <<<<<<< HEAD
+<<<<<<< HEAD
         axios.get('http://43.201.68.38:8080/api/user/alarms', config),
         axios.get('http://43.201.68.38:8080/api/user/me', config)
 =======
         axios.get('http://localhost:8080/api/user/alarms', config),
         axios.get('http://localhost:8080/api/user/me', config)
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        axios.get('http://localhost:8080/api/user/alarms', config),
+        axios.get('http://localhost:8080/api/user/me', config)
+>>>>>>> 1e287e9 (demo v1)
       ]);
       setAlarms(alarmRes.data);
       setUserInfo(userRes.data);
@@ -63,10 +68,14 @@ export default function AlarmListPage() {
       if (!token) throw new Error('토큰 없음');
       await axios.patch( // PATCH API 호출
 <<<<<<< HEAD
+<<<<<<< HEAD
         `http://43.201.68.38:8080/api/user/alarms/${alarmId}/toggle`, null,
 =======
         `http://localhost:8080/api/user/alarms/${alarmId}/toggle`, null,
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        `http://localhost:8080/api/user/alarms/${alarmId}/toggle`, null,
+>>>>>>> 1e287e9 (demo v1)
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(`Alarm ${alarmId} toggled successfully.`);
@@ -89,10 +98,14 @@ export default function AlarmListPage() {
       if (!token) throw new Error('토큰 없음');
       await axios.delete( // DELETE API 호출
 <<<<<<< HEAD
+<<<<<<< HEAD
         `http://43.201.68.38:8080/api/user/alarms/${alarmId}`,
 =======
         `http://localhost:8080/api/user/alarms/${alarmId}`,
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        `http://localhost:8080/api/user/alarms/${alarmId}`,
+>>>>>>> 1e287e9 (demo v1)
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(`Alarm ${alarmId} deleted successfully.`);

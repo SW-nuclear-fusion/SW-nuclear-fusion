@@ -4,7 +4,10 @@ import com.example.back.auth.dto.LoginRequest;
 import com.example.back.auth.dto.TokenResponse;
 import com.example.back.auth.dto.SignUpRequest;
 import com.example.back.auth.dto.SocialSignUpRequest;
+<<<<<<< HEAD
 import com.example.back.domain.RoleType;
+=======
+>>>>>>> 1e287e9 (demo v1)
 import com.example.back.domain.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,10 @@ public class AuthController {
     public ResponseEntity<?> socialSignup(@Valid @RequestBody SocialSignUpRequest request) {
         try {
             String token = authService.completeSocialSignup(request);
+<<<<<<< HEAD
+=======
+            // 성공 시, 로그인 토큰 반환
+>>>>>>> 1e287e9 (demo v1)
             return ResponseEntity.ok(new TokenResponse(token));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)

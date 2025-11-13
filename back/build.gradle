@@ -32,8 +32,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.apache.groovy:groovy'
     compileOnly 'org.projectlombok:lombok'
+<<<<<<< HEAD
     runtimeOnly 'com.mysql:mysql-connector-j'
     // runtimeOnly 'com.h2database:h2'
+=======
+    // runtimeOnly 'com.mysql:mysql-connector-j' //추후 mysql 사용시
+    runtimeOnly 'com.h2database:h2'
+>>>>>>> 1e287e9 (demo v1)
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

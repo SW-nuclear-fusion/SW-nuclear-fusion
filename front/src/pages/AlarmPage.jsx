@@ -27,12 +27,17 @@ const AlarmPage = () => {
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const [alarmRes, userRes] = await Promise.all([
 <<<<<<< HEAD
+<<<<<<< HEAD
         axios.get('http://43.201.68.38:8080/api/user/alarms', config),
         axios.get('http://43.201.68.38:8080/api/user/me', config)
 =======
         axios.get('http://localhost:8080/api/user/alarms', config),
         axios.get('http://localhost:8080/api/user/me', config)
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        axios.get('http://localhost:8080/api/user/alarms', config),
+        axios.get('http://localhost:8080/api/user/me', config)
+>>>>>>> 1e287e9 (demo v1)
       ]);
 
       setAlarms(alarmRes.data);
@@ -64,10 +69,14 @@ const AlarmPage = () => {
           if (!token) return;
           const response = await axios.get(
 <<<<<<< HEAD
+<<<<<<< HEAD
               `http://43.201.68.38:8080/api/user/alarms/checked?date=${dateString}`,
 =======
               `http://localhost:8080/api/user/alarms/checked?date=${dateString}`,
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+              `http://localhost:8080/api/user/alarms/checked?date=${dateString}`,
+>>>>>>> 1e287e9 (demo v1)
               { headers: { Authorization: `Bearer ${token}` } }
           );
 

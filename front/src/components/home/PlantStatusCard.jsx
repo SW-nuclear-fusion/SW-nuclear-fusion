@@ -40,10 +40,14 @@ const PlantStatusCard = ({ userInfo, setUserInfo, className }) => {
 
       const response = await axios.post(
 <<<<<<< HEAD
+<<<<<<< HEAD
         'http://43.201.68.38:8080/api/user/plant/water',
 =======
         'http://localhost:8080/api/user/plant/water',
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        'http://localhost:8080/api/user/plant/water',
+>>>>>>> 1e287e9 (demo v1)
         null,
         {
           headers: {
@@ -68,10 +72,14 @@ const PlantStatusCard = ({ userInfo, setUserInfo, className }) => {
 
       const response = await axios.post(
 <<<<<<< HEAD
+<<<<<<< HEAD
         'http://43.201.68.38:8080/api/user/plant/affection',
 =======
         'http://localhost:8080/api/user/plant/affection',
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+        'http://localhost:8080/api/user/plant/affection',
+>>>>>>> 1e287e9 (demo v1)
         null,
         {
           headers: {

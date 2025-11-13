@@ -15,10 +15,14 @@ export default function LoginPage() {
 
     try {
 <<<<<<< HEAD
+<<<<<<< HEAD
       const response = await axios.post('http://43.201.68.38:8080/api/auth/login', loginData);
 =======
       const response = await axios.post('http://localhost:8080/api/auth/login', loginData);
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+      const response = await axios.post('http://localhost:8080/api/auth/login', loginData);
+>>>>>>> 1e287e9 (demo v1)
       console.log(response);
       const token = response.data.accessToken;
       localStorage.setItem('accessToken', token);

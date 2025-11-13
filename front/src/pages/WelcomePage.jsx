@@ -8,10 +8,14 @@ export default function WelcomePage() {
   const navigate = useNavigate();
   const { formData } = useSignup();
 <<<<<<< HEAD
+<<<<<<< HEAD
   const API_BASE_URL = 'http://43.201.68.38:8080';
 =======
   const API_BASE_URL = 'http://localhost:8080';
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+  const API_BASE_URL = 'http://localhost:8080';
+>>>>>>> 1e287e9 (demo v1)
 
   // [!] 회원가입 API 호출 및 후속 처리 함수
   const handleSignupAndProceed = async (nextPath) => {

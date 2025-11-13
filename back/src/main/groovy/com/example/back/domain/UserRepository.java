@@ -8,9 +8,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 아이디로 사용자 찾기 (로그인 시)
     Optional<User> findByUserId(String userId);
 
+<<<<<<< HEAD
     // 전화번호로 사용자 찾기 (보호자 연결 요청용)
     Optional<User> findByPhone(String phone);
 
+=======
+>>>>>>> 1e287e9 (demo v1)
     // 아이디 중복 검사
     boolean existsByUserId(String userId);
 

@@ -38,6 +38,7 @@ public class MissionService {
                 .collect(Collectors.toList());
     }
 
+<<<<<<< HEAD
     @Transactional(readOnly = true)
     public List<QuizQuestionDto> getPracticeQuizByCategory(String category) {
         // 1. 레포지토리에서 카테고리별 랜덤 5개 퀴즈 조회
@@ -49,6 +50,8 @@ public class MissionService {
                 .collect(Collectors.toList());
     }
 
+=======
+>>>>>>> 1e287e9 (demo v1)
     /** 퀴즈 답안 제출 및 채점 */
     @Transactional
     public QuizResultDto submitQuiz(String userId, List<QuizAnswerDto> answers) {

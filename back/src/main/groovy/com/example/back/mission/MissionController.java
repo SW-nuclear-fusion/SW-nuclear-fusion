@@ -35,6 +35,7 @@ public class MissionController {
         }
     }
 
+<<<<<<< HEAD
     @GetMapping("/quiz/practice")
     public ResponseEntity<?> getPracticeQuiz(@RequestParam("category") String category) {
         try {
@@ -47,6 +48,8 @@ public class MissionController {
         }
     }
 
+=======
+>>>>>>> 1e287e9 (demo v1)
     /** 퀴즈: 답안 제출 (POST /api/missions/quiz/submit) */
     @PostMapping("/quiz/submit")
     public ResponseEntity<?> submitQuiz(@RequestBody List<QuizAnswerDto> answers) {

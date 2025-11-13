@@ -32,10 +32,14 @@ export default function SignUpStep2_Phone() {
     setIsLoading(true);
     try {
 <<<<<<< HEAD
+<<<<<<< HEAD
       const response = await axios.get('http://43.201.68.38:8080/api/auth/check-phone', {
 =======
       const response = await axios.get('http://localhost:8080/api/auth/check-phone', {
 >>>>>>> cad27c24f4c0e36f3b2cf20dbc2e1a6ebc5e11dd
+=======
+      const response = await axios.get('http://localhost:8080/api/auth/check-phone', {
+>>>>>>> 1e287e9 (demo v1)
         params: {
           phone: phone
         }
