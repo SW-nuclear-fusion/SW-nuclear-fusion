@@ -6,6 +6,7 @@ import com.example.back.auth.dto.SocialSignUpRequest;
 import com.example.back.domain.RoleType;
 import com.example.back.domain.User;
 import com.example.back.domain.UserRepository;
+import com.example.back.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     // 회원가입
     @Transactional
@@ -33,8 +35,9 @@ public class AuthService {
         }
 
         User user = request.toEntity(passwordEncoder);
+        User saveduser = userRepository.save(user);
+        userService.initializeNewUserPlants(saveduser);
 
-        userRepository.save(user);
         return user;
     }
 

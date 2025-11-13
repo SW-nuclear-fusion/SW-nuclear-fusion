@@ -43,6 +43,8 @@ public class MyPageController {
         }
     }
 
+
+
     // --- Helper Method ---
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

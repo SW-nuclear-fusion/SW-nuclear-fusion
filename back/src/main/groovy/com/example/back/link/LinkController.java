@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.back.mypage.dto.DailyDataDto;
+import com.example.back.link.dto.RejectedLinkDto;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -79,5 +81,24 @@ public class LinkController {
     ) {
         List<LinkedSeniorDto> seniors = linkService.getApprovedSeniors(userId);
         return ResponseEntity.ok(seniors);
+    }
+
+    @GetMapping("/requests/rejected")
+    public ResponseEntity<List<RejectedLinkDto>> getMyRejectedRequests(
+            @AuthenticationPrincipal String userId // (보호자)
+    ) {
+        List<RejectedLinkDto> requests = linkService.getRejectedRequests(userId);
+        return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/senior-monthly/{seniorId}")
+    public ResponseEntity<List<DailyDataDto>> getSeniorMonthlyData(
+            @AuthenticationPrincipal String userId, // (보호자)
+            @PathVariable("seniorId") Long seniorId,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month
+    ) {
+        List<DailyDataDto> monthlyData = linkService.getSeniorMonthlyData(userId, seniorId, year, month);
+        return ResponseEntity.ok(monthlyData);
     }
 }

@@ -1,10 +1,13 @@
 package com.example.back.link;
 import com.example.back.domain.*;
 import com.example.back.link.dto.*;
+import com.example.back.mypage.MyPageService;
+import com.example.back.mypage.dto.DailyDataDto;
 import com.example.back.mypage.dto.MedicationCheckDto;
 import com.example.back.domain.DailyMoodRepository;
 import com.example.back.domain.QuizAttemptRepository;
 import com.example.back.domain.AlarmCheckLogRepository;
+import com.example.back.link.dto.RejectedLinkDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class LinkService {
     private final AlarmCheckLogRepository alarmCheckLogRepository;
     private final QuizAttemptRepository quizAttemptRepository;
     private final DailyMoodRepository dailyMoodRepository;
+    private final MyPageService myPageService;
 
     /**
      * (보호자) 시니어에게 연결을 요청합니다.
@@ -96,6 +100,19 @@ public class LinkService {
         // 3. DTO 리스트로 변환하여 반환
         return pendingLinks.stream()
                 .map(LinkPendingResponseDto::new) // (link) -> new LinkPendingResponseDto(link)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<RejectedLinkDto> getRejectedRequests(String guardianUserId) {
+        User guardian = userRepository.findByUserId(guardianUserId)
+                .orElseThrow(() -> new RuntimeException("현재 로그인된 사용자 정보를 찾을 수 없습니다."));
+
+        // [!] N+1 최적화 쿼리 재사용, 'REJECTED' 상태로 조회
+        List<SeniorGuardianLink> rejectedLinks = linkRepository.findByGuardianAndStatusWithSenior(guardian, LinkStatus.REJECTED);
+
+        return rejectedLinks.stream()
+                .map(RejectedLinkDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -200,6 +217,28 @@ public class LinkService {
                 .todayMedicationLogs(todayMedications)
                 .todayQuizLogs(todayQuizzes)
                 .build();
+    }
+
+    @Transactional(readOnly = true) // 조회 전용
+    public List<DailyDataDto> getSeniorMonthlyData(String guardianUserId, Long seniorId, int year, int month) {
+
+        // 1. 보호자(본인) 정보 조회
+        User guardian = userRepository.findByUserId(guardianUserId)
+                .orElseThrow(() -> new RuntimeException("현재 로그인된 사용자 정보를 찾을 수 없습니다."));
+
+        // 2. 조회 대상 시니어 정보 조회
+        User senior = userRepository.findById(seniorId)
+                .orElseThrow(() -> new RuntimeException("조회하려는 시니어 정보를 찾을 수 없습니다."));
+
+        // 3. [보안] 두 사람이 'APPROVED' 상태인지 확인
+        linkRepository.findByGuardianAndSeniorAndStatus(guardian, senior, LinkStatus.APPROVED)
+                .orElseThrow(() -> new RuntimeException("해당 시니어를 조회할 권한이 없습니다.")); // 403 Forbidden
+
+        // 4. [데이터 조회] MyPageService를 재사용하여 월별 데이터 조회
+        // (MyPageService는 String userId가 필요하므로 변환)
+        String seniorUserIdString = senior.getUserId();
+
+        return myPageService.getMonthlyData(seniorUserIdString, year, month);
     }
 
     /**

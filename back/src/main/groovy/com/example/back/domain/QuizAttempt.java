@@ -38,10 +38,14 @@ public class QuizAttempt {
     @Column(nullable = false)
     private int totalCount; // 전체 문제 개수
 
+    @Column(nullable = false)
+    private String status;
+
     @Builder
-    public QuizAttempt(User user, int correctCount, int totalCount) {
+    public QuizAttempt(User user, int correctCount, int totalCount, String status) {
         this.user = user;
         this.correctCount = correctCount;
         this.totalCount = totalCount;
+        this.status = status;
     }
 }

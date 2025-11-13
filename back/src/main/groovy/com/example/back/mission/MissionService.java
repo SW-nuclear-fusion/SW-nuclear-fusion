@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -49,6 +50,14 @@ public class MissionService {
                 .collect(Collectors.toList());
     }
 
+    public boolean todayquiz(String userId) {
+        LocalDate today = LocalDate.now();
+        if (quizAttemptRepository.existsByUser_UserIdAndAttemptDate(userId, today)) {
+            return true;
+        }
+        return false;
+    }
+
     /** 퀴즈 답안 제출 및 채점 */
     @Transactional
     public QuizResultDto submitQuiz(String userId, List<QuizAnswerDto> answers) {
@@ -67,24 +76,105 @@ public class MissionService {
                 correctCount++;
             }
         }
+        // 3. 진단 상태 결정 (프론트 로직을 백엔드로 이동)
+        String status;
+        String message;
+        int heartMin, heartMax, waterMin, waterMax;
+        if (correctCount <= 1) {
+            status = "위험";
+            message = "인지 기능 관리가 매우 시급합니다. 적극적인 생활 변화가 필요합니다.";
+            heartMin = 1; heartMax = 2;
+            waterMin = 1; waterMax = 3;
+        } else if (correctCount <= 3) {
+            status = "의심";
+            message = "기억력 유지에 노력이 필요한 상태입니다. 생활 패턴을 점검하세요.";
+            heartMin = 2; heartMax = 3;
+            waterMin = 4; waterMax = 6;
+        } else {
+            status = "정상";
+            message = "아주 건강한 상태예요. 지금처럼만 유지하면 충분합니다!";
+            heartMin = 3; heartMax = 4;
+            waterMin = 7; waterMax = 10;
+        }
 
+        // 4. 보상 랜덤 지급 및 DB 반영
+        int waterAmount = random.nextInt(waterMax - waterMin + 1) + waterMin;
+
+        // [하트 보상] 규칙: 상태에 따라 차등 랜덤 지급
+        int heartAmount = random.nextInt(heartMax - heartMin + 1) + heartMin;
         // 퀴즈 시도 기록 저장
         QuizAttempt attempt = QuizAttempt.builder()
                 .user(user)
                 .correctCount(correctCount)
                 .totalCount(answers.size())
+                .status(status)
                 .build();
         quizAttemptRepository.save(attempt);
 
         // 보상 지급
-        RewardDto reward = null;
-        if (correctCount > 0) {
-            user.addWater(correctCount); // User 엔티티에 addWater 메서드가 있다고 가정
-            reward = new RewardDto("water", correctCount);
-        }
+        List<RewardDto> rewards = new ArrayList<>();// User 엔티티에 addWater 메서드가 있다고 가정
+        user.addWater(waterAmount);
+        user.addAffection(heartAmount);
+        RewardDto waterreward = new RewardDto("water", waterAmount);
+        RewardDto heartreward = new RewardDto("heart", heartAmount);
+        rewards.add(waterreward);
+        rewards.add(heartreward);
 
         // 5. 결과 반환
-        return new QuizResultDto(correctCount, answers.size(), reward);
+        return new QuizResultDto(correctCount, answers.size(), status, message, rewards);
+    }
+
+    @Transactional
+    public QuizResultDto submitpracticeQuiz(String userId, List<QuizAnswerDto> answers) {
+        User user = findUserByUserId(userId);
+
+        int correctCount = 0;
+        // 채점
+        for (QuizAnswerDto answer : answers) {
+            QuizQuestion question = quizQuestionRepository.findById(answer.getQuestionId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid question ID"));
+            if (question.getCorrectAnswer().equals(answer.getSubmittedAnswer())) {
+                correctCount++;
+            }
+        }
+        // 3. 진단 상태 결정 (프론트 로직을 백엔드로 이동)
+        String status;
+        String message;
+        int heartMin, heartMax, waterMin, waterMax;
+        if (correctCount <= 1) {
+            status = "위험";
+            message = "인지 기능 관리가 매우 시급합니다. 적극적인 생활 변화가 필요합니다.";
+            heartMin = 1; heartMax = 2;
+            waterMin = 1; waterMax = 3;
+        } else if (correctCount <= 3) {
+            status = "의심";
+            message = "기억력 유지에 노력이 필요한 상태입니다. 생활 패턴을 점검하세요.";
+            heartMin = 2; heartMax = 3;
+            waterMin = 4; waterMax = 6;
+        } else {
+            status = "정상";
+            message = "아주 건강한 상태예요. 지금처럼만 유지하면 충분합니다!";
+            heartMin = 3; heartMax = 4;
+            waterMin = 7; waterMax = 10;
+        }
+
+        // 4. 보상 랜덤 지급 및 DB 반영
+        int waterAmount = random.nextInt(waterMax - waterMin + 1) + waterMin;
+
+        // [하트 보상] 규칙: 상태에 따라 차등 랜덤 지급
+        int heartAmount = random.nextInt(heartMax - heartMin + 1) + heartMin;
+
+        // 보상 지급
+        List<RewardDto> rewards = new ArrayList<>();// User 엔티티에 addWater 메서드가 있다고 가정
+//        user.addWater(waterAmount);
+//        user.addAffection(heartAmount);
+        RewardDto waterreward = new RewardDto("water", waterAmount);
+        RewardDto heartreward = new RewardDto("heart", heartAmount);
+        rewards.add(waterreward);
+        rewards.add(heartreward);
+
+        // 5. 결과 반환
+        return new QuizResultDto(correctCount, answers.size(), status, message, rewards);
     }
 
 

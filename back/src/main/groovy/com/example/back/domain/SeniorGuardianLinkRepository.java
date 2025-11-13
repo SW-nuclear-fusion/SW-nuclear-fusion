@@ -43,4 +43,6 @@ public interface SeniorGuardianLinkRepository extends JpaRepository<SeniorGuardi
             @Param("guardian") User guardian,
             @Param("status") LinkStatus status
     );
+
+    Optional<Object> findByGuardianAndSeniorAndStatus(User guardian, User senior, LinkStatus linkStatus);
 }

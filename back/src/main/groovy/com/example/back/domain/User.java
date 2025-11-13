@@ -1,5 +1,13 @@
 package com.example.back.domain;
 
+// [신규] UserPlant, RewardVoucher 임포트 추가
+import com.example.back.domain.UserPlant;
+import com.example.back.domain.RewardVoucher;
+// [신규] 누락된 임포트 추가
+import com.example.back.domain.Alarm;
+import com.example.back.domain.SeniorGuardianLink;
+import org.hibernate.annotations.ColumnDefault; // [신규] ColumnDefault 임포트
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,9 +33,8 @@ public class User {
     @Column(nullable = false)
     private String password; // 2. 비밀번호 (암호화될 예정)
 
-    // (소셜 가입 시 null 허용)
     @Column(unique = true, nullable = true)
-    private String phone; // 3. 휴대폰 (시니어-보호자 연결의 Key가 됩니다)
+    private String phone; // 3. 휴대폰
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
@@ -36,7 +43,7 @@ public class User {
     @Column(nullable = true)
     private String fontSize; // 5. 폰트 크기
 
-    @Column(nullable = true) // 소셜 로그인 시 이름이 없을 수 있으므로 true로 변경
+    @Column(nullable = true)
     private String name; // 6. 이름
 
     @Column(nullable = true)
@@ -46,49 +53,57 @@ public class User {
     private String gender; // 8. 성별
 
     // (소셜 로그인용)
-    private String provider; // (예: "google", "kakao")
-    private String providerId; // (소셜 서비스의 고유 ID)
+    private String provider;
+    private String providerId;
 
-    // --- 식물 정보 필드 ---
-    @Column(nullable = true)
-    private String plantColor;
+    // --- [삭제] 식물 정보 필드 ---
+    // (plantColor, plantName, plantExp 필드 제거됨)
+    // --- [삭제] ---
 
-    @Column(nullable = true)
-    private String plantName;
-
+    // --- [유지] 사용자의 재화 (물, 애정도) ---
     @Column(nullable = false)
-    private int plantExp = 0;
-
-    @Column(nullable = false)
+    @ColumnDefault("1")
     private int userWater = 1;
 
     @Column(nullable = false)
+    @ColumnDefault("1")
     private int userAffection = 1;
+
+    // --- [신규] 사용자의 재화 (포인트) ---
+    @Column(name = "user_points", nullable = false)
+    @ColumnDefault("0")
+    private int userPoints = 0;
+
+
+    // --- [신규] 연관관계: 사용자가 보유한 식물 목록 ---
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UserPlant> userPlants = new ArrayList<>();
+
+    // --- [신규] 연관관계: 사용자가 획득한 보상 목록 ---
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RewardVoucher> rewardVouchers = new ArrayList<>();
 
     // --- 기존 연관관계 ---
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Alarm> alarms = new ArrayList<>();
 
     // --- [!] 시니어-보호자 연동 기능 추가 ---
-
-    /** (시니어 전용) 보호자가 내 정보를 열람한 횟수 */
     @Column(nullable = false)
+    @ColumnDefault("0")
     private int guardianViewCount = 0;
 
-    /** (보호자 전용) 내가 연결 요청한 시니어 목록 */
     @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SeniorGuardianLink> guardianLinks = new ArrayList<>();
 
-    /** (시니어 전용) 나에게 연결 요청한 보호자 목록 */
     @OneToMany(mappedBy = "senior", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SeniorGuardianLink> seniorLinks = new ArrayList<>();
 
-    // --- Builder 생성자 ---
+
+    // --- [수정] Builder 생성자 ---
     @Builder
     public User(String userId, String password, String phone, RoleType role, String fontSize,
                 String name, LocalDate birthdate, String gender,
-                String provider, String providerId,
-                String plantColor, String plantName) {
+                String provider, String providerId) {
         this.userId = userId;
         this.password = password;
         this.phone = phone;
@@ -99,13 +114,10 @@ public class User {
         this.gender = gender;
         this.provider = provider;
         this.providerId = providerId;
-        this.plantColor = plantColor;
-        this.plantName = plantName;
-        // guardianViewCount는 기본값 0으로 자동 초기화됩니다.
+        // userWater(1), userAffection(1), userPoints(0)는 기본값으로 자동 초기화
     }
 
     // --- Setter 메서드들 ---
-    // (기존 Setter 생략)
     public void setPhone(String phone) { this.phone = phone; }
     public void setRole(RoleType role) { this.role = role; }
     public void setFontSize(String fontSize) { this.fontSize = fontSize; }
@@ -117,48 +129,47 @@ public class User {
         }
         return this;
     }
-    public void setPlantColor(String plantColor) { this.plantColor = plantColor; }
-    public void setPlantName(String plantName) { this.plantName = plantName; }
 
-    // --- 비즈니스 로직 메서드들 ---
-    // (기존 식물 관련 메서드 생략)
+    // --- [수정] 비즈니스 로직 메서드들 ---
+
     /** 물 사용 (성공 시 true, 물 부족 시 false 반환) */
     public boolean useWater(int amount) {
-        // [!] 1. 검사: 현재 물이 사용할 양보다 많거나 같은지 확인
         if (this.userWater >= amount) {
-            // [!] 2. 사용: 물을 차감
             this.userWater -= amount;
-            // [!] 3. 보상: 경험치 증가 (예시: 1 물당 5 경험치)
-            this.plantExp += (amount * 5);
-            // [!] 4. 성공 반환
             return true;
         }
-        // [!] 5. 실패 반환 (물이 부족함)
         return false;
     }
 
     /** 애정도 사용 (성공 시 true, 애정 부족 시 false 반환) */
     public boolean useAffection(int amount) {
-        // [!] 1. 검사: 현재 애정도가 사용할 양보다 많거나 같은지 확인
         if (this.userAffection >= amount) {
-            // [!] 2. 사용: 애정도 차감
             this.userAffection -= amount;
-            // [!] 3. 보상: 경험치 증가 (예시: 1 애정당 10 경험치)
-            this.plantExp += (amount * 10);
-            // [!] 4. 성공 반환
             return true;
         }
-        // [!] 5. 실패 반환 (애정도가 부족함)
         return false;
     }
+
+    // [신규] 포인트 사용 (성공 시 true, 포인트 부족 시 false 반환)
+    public boolean usePoints(int amount) {
+        if (this.userPoints >= amount) {
+            this.userPoints -= amount;
+            return true;
+        }
+        return false; // 포인트 부족
+    }
+
     public void addWater(int amount) { this.userWater += amount; }
     public void addAffection(int amount) { this.userAffection += amount; }
+
+    // [신규] 포인트 추가
+    public void addPoints(int amount) { this.userPoints += amount; }
+
     public void addAlarm(Alarm alarm) { this.alarms.add(alarm); }
 
 
     // --- [!] 연동 기능 관련 편의 메서드 추가 ---
-
-    /** (시니어 전용) 보호자 열람 횟수 1 증가 */
+    /** (시니어 전용) 보호자가 내 정보를 열람 횟수 1 증가 */
     public void incrementGuardianViewCount() {
         this.guardianViewCount++;
     }

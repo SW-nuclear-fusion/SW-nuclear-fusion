@@ -1,100 +1,183 @@
 package com.example.back.user;
 
-import com.example.back.domain.User; // User import
-import com.example.back.user.dto.PlantSelectionRequest;
+import com.example.back.domain.User;
+import com.example.back.domain.UserRepository;
 import com.example.back.user.dto.UserInfoResponse;
 import jakarta.validation.Valid;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication; // [!] Authentication import
-import org.springframework.security.core.context.SecurityContextHolder; // [!] SecurityContextHolder import
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import com.example.back.user.dto.PlantActivateRequest;
+import jakarta.validation.Valid;
+import com.example.back.user.dto.RewardExchangeRequest;
+import com.example.back.user.dto.RewardExchangeResponse;
+import com.example.back.user.dto.RewardVoucherListResponse;
+
+// [신규] 3개 DTO 및 List 임포트
+import com.example.back.user.dto.UserPlantDto;
+import com.example.back.user.dto.RewardVoucherDto;
+import com.example.back.user.dto.UserUpdateRequest;
+import java.util.List;
 
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user") // 사용자 관련 API 공통 경로
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    /**
-     * 식물 선택 정보 저장 (POST /api/user/plant)
-     */
-    @PostMapping("/plant")
-    public ResponseEntity<Map<String, String>> selectPlant(
-            @Valid @RequestBody PlantSelectionRequest request) {
+    // --- (기존 API: 식물 활성화) ---
+    // (내부 로직은 Service에서 바뀌었지만, 컨트롤러는 동일함)
+    @PostMapping("/plant/activate")
+    public ResponseEntity<?> activatePlant(
+            @Valid @RequestBody PlantActivateRequest request) {
 
-        // [!] 현재 로그인된 사용자의 ID 가져오기 (JWT 필터에서 설정됨)
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName(); // JwtAuthenticationFilter에서 userId를 name으로 설정했음
-
-        userService.savePlantSelection(currentUserId, request);
-        return ResponseEntity.ok(Map.of("message", "식물 정보가 저장되었습니다."));
+        String currentUserId = getCurrentUserId();
+        try {
+            UserInfoResponse updatedUserInfo = userService.activatePlant(currentUserId, request);
+            return ResponseEntity.ok(updatedUserInfo);
+        } catch (EntityNotFoundException e) { // 404 (식물 못 찾음)
+            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
+        } catch (IllegalStateException e) { // 400 (규칙 위반: 만렙 아님 등)
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) { // 500
+            return ResponseEntity.internalServerError().body(Map.of("message", e.getMessage()));
+        }
     }
 
-    /**
-     * 내 정보 조회 (GET /api/user/me)
-     * 홈 화면 등에서 사용
-     */
+    // --- (기존 API: 내 정보 조회) ---
     @GetMapping("/me")
     public ResponseEntity<UserInfoResponse> getMyInfo() {
         String currentUserId = getCurrentUserId();
-        // [!] Service가 UserInfoResponse를 반환하는지 확인!
         UserInfoResponse userInfo = userService.getCurrentUserInfo(currentUserId);
-        return ResponseEntity.ok(userInfo); // DTO 객체 반환
+        return ResponseEntity.ok(userInfo);
     }
 
-    /** [!] 물 주기 API (POST /api/user/plant/water) */
+    // --- [신규 API 1] GET /api/user/plants (보유 식물 4개 전체 조회) ---
+    @GetMapping("/plants")
+    public ResponseEntity<List<UserPlantDto>> getMyAllPlants() {
+        String currentUserId = getCurrentUserId();
+        List<UserPlantDto> plants = userService.getAllUserPlants(currentUserId);
+        return ResponseEntity.ok(plants);
+    }
+
+    @PostMapping("/rewards/exchange")
+    public ResponseEntity<?> exchangeReward(
+            @Valid @RequestBody RewardExchangeRequest request) {
+
+        String currentUserId = getCurrentUserId();
+        try {
+            RewardExchangeResponse response = userService.exchangeReward(currentUserId, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            // 포인트 부족 등
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // --- [신규 API 2] GET /api/user/rewards/vouchers (교환권 목록 조회) ---
+    @GetMapping("/rewards/vouchers")
+    public ResponseEntity<?> getRewardVouchers() {
+        String currentUserId = getCurrentUserId();
+        try {
+            RewardVoucherListResponse response = userService.getVouchersByStatus(currentUserId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // --- [신규 API 2] GET /api/user/rewards (보상 교환권 전체 조회) ---
+    @GetMapping("/rewards")
+    public ResponseEntity<List<RewardVoucherDto>> getMyAllRewards() {
+        String currentUserId = getCurrentUserId();
+        List<RewardVoucherDto> vouchers = userService.getAllUserVouchers(currentUserId);
+        return ResponseEntity.ok(vouchers);
+    }
+
+    // --- [신규 API 3] PATCH /api/user/me (사용자 정보 변경) ---
+    @PatchMapping("/me")
+    public ResponseEntity<UserInfoResponse> updateMyInfo(
+            @Valid @RequestBody UserUpdateRequest request) {
+
+        String currentUserId = getCurrentUserId();
+        UserInfoResponse updatedUserInfo = userService.updateUserInfo(currentUserId, request);
+        return ResponseEntity.ok(updatedUserInfo);
+    }
+
+    // --- (이하 기존 API: 물 주기, 애정 주기, 알람 체크, 뷰 카운트) ---
     @PostMapping("/plant/water")
     public ResponseEntity<?> waterPlant() {
         String currentUserId = getCurrentUserId();
         try {
             UserInfoResponse updatedUserInfo = userService.waterPlant(currentUserId);
-            return ResponseEntity.ok(updatedUserInfo); // 업데이트된 정보 반환
-        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(updatedUserInfo);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
-    /** [!] 애정 주기 API (POST /api/user/plant/affection) */
     @PostMapping("/plant/affection")
     public ResponseEntity<?> giveAffection() {
         String currentUserId = getCurrentUserId();
         try {
             UserInfoResponse updatedUserInfo = userService.giveAffection(currentUserId);
-            return ResponseEntity.ok(updatedUserInfo); // 업데이트된 정보 반환
-        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(updatedUserInfo);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
-    /**
-     * 알람 체크(복용 완료) API
-     */
-    @PostMapping("/alarms/{alarmId}/check")
-    public ResponseEntity<Object> checkOffAlarm(@PathVariable("alarmId") Long alarmId) { // 반환 타입 Object로 변경 권장
+    // --- [신규 API] 만렙 포인트 수령 ---
+    @PostMapping("/plant/claim-points")
+    public ResponseEntity<?> claimPoints() {
         String currentUserId = getCurrentUserId();
         try {
-            // UserService의 checkOffAlarm 호출
+            // (1000 포인트 지급 및 상태 변경)
+            UserInfoResponse updatedUserInfo = userService.claimPlantPoints(currentUserId);
+            return ResponseEntity.ok(updatedUserInfo); // 최신 유저 정보 반환
+        } catch (IllegalStateException e) {
+            // (예: "아직 만렙 아님", "이미 수령함")
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/alarms/{alarmId}/check")
+    public ResponseEntity<Object> checkOffAlarm(@PathVariable("alarmId") Long alarmId) {
+        String currentUserId = getCurrentUserId();
+        try {
             UserInfoResponse updatedUserInfo = userService.checkOffAlarm(currentUserId, alarmId);
-            // 성공 시 업데이트된 사용자 정보 반환
             return ResponseEntity.ok(updatedUserInfo);
-        } catch (EntityNotFoundException e) { // 알람 ID 못 찾거나 권한 없을 때
-            return ResponseEntity.notFound().build(); // 404 Not Found
-        } catch (Exception e) { // 그 외 예외 (예: 보상 계산 오류 등)
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("message", e.getMessage()));
         }
     }
 
-    // --- Helper Method ---
-    /** 현재 로그인된 사용자 ID 가져오는 공통 메서드 */
+    @GetMapping("/view-count")
+    public ResponseEntity<Map<String, Integer>> getMyTotalViewCount(
+            @AuthenticationPrincipal String userId
+    ) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        return ResponseEntity.ok(Map.of("totalViewCount", user.getGuardianViewCount()));
+    }
+
+    // --- (Helper Method) ---
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
-            throw new IllegalStateException("User is not authenticated"); // 혹은 다른 예외 처리
+            throw new IllegalStateException("User is not authenticated");
         }
         return authentication.getName();
     }
