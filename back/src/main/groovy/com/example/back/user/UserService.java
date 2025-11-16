@@ -10,6 +10,7 @@ import com.example.back.user.dto.*;
 import com.example.back.domain.RewardVoucherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Random;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -281,7 +282,7 @@ public class UserService {
     public UserInfoResponse checkOffAlarm(String userId, Long alarmId) {
         User user = findUserByUserId(userId);
         Alarm alarm = findAlarmByIdAndUserId(alarmId, userId); // 본인 알람인지 확인
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         // 중복 체크 로직
         boolean alreadyChecked = alarmCheckLogRepository.existsByUser_UserIdAndAlarm_IdAndCheckDate(userId, alarmId, today);

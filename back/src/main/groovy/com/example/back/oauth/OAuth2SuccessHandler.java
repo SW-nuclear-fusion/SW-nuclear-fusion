@@ -42,7 +42,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user.getPhone() == null) {
             // 1. 신규 유저 (추가 정보 필요)
             // 임시 토큰 (여기서는 userId 자체를 토큰처럼 사용)을 /signup/role로 보냄
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/signup/role")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/signup/phone")
                     .queryParam("userId", userId) // [!] userId를 쿼리 파라미터로 전달
                     .toUriString();
         } else {

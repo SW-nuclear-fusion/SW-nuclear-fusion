@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +70,8 @@ public class MyPageService {
     @Transactional
     public DailyDataDto saveOrUpdateDailyMood(String userId, MoodRequestDto request) {
         User user = findUserByUserId(userId);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        System.out.println(today);
 
         // 1. 오늘 날짜로 기존 기록이 있는지 확인
         Optional<DailyMood> existingMood = dailyMoodRepository.findByUser_UserIdAndMoodDate(userId, today);

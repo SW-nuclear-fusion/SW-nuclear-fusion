@@ -35,6 +35,8 @@ public class UserInfoResponse {
     private int userAffection;
     private int userPoints;
 
+
+
     /**
      * [수정] 생성자: User와 활성화된 UserPlant를 받음
      */

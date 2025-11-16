@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -32,13 +33,13 @@ public class MissionLog {
     @JoinColumn(name = "mission_id", nullable = false)
     private LocationMission mission;
 
-    @CreatedDate
     @Column(name = "completion_date", nullable = false, updatable = false)
     private LocalDate completionDate;
 
     @Builder
-    public MissionLog(User user, LocationMission mission) {
+    public MissionLog(User user, LocationMission mission, LocalDate today) {
         this.user = user;
         this.mission = mission;
+        this.completionDate = today;
     }
 }

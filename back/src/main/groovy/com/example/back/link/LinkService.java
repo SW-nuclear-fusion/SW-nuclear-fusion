@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -188,7 +189,7 @@ public class LinkService {
         senior.incrementGuardianViewCount();
 
         // 5. [!] 실제 시니어의 '오늘' 데이터 조회 (MyPageService 로직 활용)
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         String seniorUserIdString = senior.getUserId(); // Repository가 요구하는 String userId
 
         // 5a. 오늘 감정 기록 조회

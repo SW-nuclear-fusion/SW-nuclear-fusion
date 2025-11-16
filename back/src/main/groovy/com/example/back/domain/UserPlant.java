@@ -29,11 +29,11 @@ public class UserPlant {
     @Column(name = "plant_type", nullable = false)
     private PlantType plantType;
 
-    @Column(name = "plant_level", nullable = false)
+    @Column(name = "plant_level")
     @ColumnDefault("1")
     private int plantLevel = 1;
 
-    @Column(name = "plant_exp", nullable = false)
+    @Column(name = "plant_exp")
     @ColumnDefault("0")
     private int plantExp = 0;
 

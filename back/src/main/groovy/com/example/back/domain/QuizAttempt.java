@@ -42,8 +42,9 @@ public class QuizAttempt {
     private String status;
 
     @Builder
-    public QuizAttempt(User user, int correctCount, int totalCount, String status) {
+    public QuizAttempt(User user, LocalDate today, int correctCount, int totalCount, String status) {
         this.user = user;
+        this.attemptDate =  today;
         this.correctCount = correctCount;
         this.totalCount = totalCount;
         this.status = status;

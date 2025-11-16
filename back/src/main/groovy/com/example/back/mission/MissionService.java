@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,7 +29,7 @@ public class MissionService {
     /** 오늘 풀 퀴즈 5개 가져오기 */
     public List<QuizQuestionDto> getDailyQuiz(String userId) {
         // 1. 오늘 이미 퀴즈를 풀었는지 확인
-        if (quizAttemptRepository.existsByUser_UserIdAndAttemptDate(userId, LocalDate.now())) {
+        if (quizAttemptRepository.existsByUser_UserIdAndAttemptDate(userId, LocalDate.now(ZoneId.of("Asia/Seoul")))) {
             throw new IllegalStateException("오늘의 퀴즈를 이미 완료했습니다.");
         }
         // 2. 랜덤 퀴즈 5개 조회
@@ -51,7 +52,7 @@ public class MissionService {
     }
 
     public boolean todayquiz(String userId) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         if (quizAttemptRepository.existsByUser_UserIdAndAttemptDate(userId, today)) {
             return true;
         }
@@ -62,7 +63,7 @@ public class MissionService {
     @Transactional
     public QuizResultDto submitQuiz(String userId, List<QuizAnswerDto> answers) {
         User user = findUserByUserId(userId);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         if (quizAttemptRepository.existsByUser_UserIdAndAttemptDate(userId, today)) {
             throw new IllegalStateException("퀴즈를 이미 제출했습니다.");
         }
@@ -105,6 +106,7 @@ public class MissionService {
         // 퀴즈 시도 기록 저장
         QuizAttempt attempt = QuizAttempt.builder()
                 .user(user)
+                .today(today)
                 .correctCount(correctCount)
                 .totalCount(answers.size())
                 .status(status)
@@ -143,12 +145,12 @@ public class MissionService {
         int heartMin, heartMax, waterMin, waterMax;
         if (correctCount <= 1) {
             status = "위험";
-            message = "인지 기능 관리가 매우 시급합니다. 적극적인 생활 변화가 필요합니다.";
+            message = "조금 주의가 필요해요. 전문가 상담과 꾸준한 훈련으로 관리하면 늦지 않았습니다!";
             heartMin = 1; heartMax = 2;
             waterMin = 1; waterMax = 3;
         } else if (correctCount <= 3) {
             status = "의심";
-            message = "기억력 유지에 노력이 필요한 상태입니다. 생활 패턴을 점검하세요.";
+            message = "살짝 의심 신호가 보여요. 매일 조금씩 퀴즈하면서 예방해요!";
             heartMin = 2; heartMax = 3;
             waterMin = 4; waterMax = 6;
         } else {
@@ -190,7 +192,9 @@ public class MissionService {
     @Transactional
     public RewardDto completeVisitMission(String userId, Long missionId, VisitRequestDto visitRequest) {
         User user = findUserByUserId(userId);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        System.out.print("asdfasdfasdfasdfasdfasdf ----------sdfasdfadsfasdfasdfasd 오늘 날짜 :");
+        System.out.println(today);
         // 1. 오늘 이미 완료한 미션인지 확인
         if (missionLogRepository.existsByUser_UserIdAndMission_IdAndCompletionDate(userId, missionId, today)) {
             throw new IllegalStateException("오늘 이미 완료한 방문 미션입니다.");
@@ -209,7 +213,7 @@ public class MissionService {
         // 4. 거리 확인 (미터 단위)
         if (distance <= mission.getRadiusMeters()) {
             // 5. 성공: 로그 저장 및 보상 지급
-            MissionLog log = MissionLog.builder().user(user).mission(mission).build();
+            MissionLog log = MissionLog.builder().user(user).mission(mission).today(today).build();
             missionLogRepository.save(log);
 
             int rewardAmount = random.nextInt(3) + 1; // 1~3개
