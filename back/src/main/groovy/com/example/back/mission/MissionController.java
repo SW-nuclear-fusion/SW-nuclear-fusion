@@ -111,6 +111,18 @@ public class MissionController {
         return ResponseEntity.ok(datas);
     }
 
+    @GetMapping("/locations/completed-count")
+    public ResponseEntity<?> getCompletedMissionCount() {
+        try {
+            String userId = getCurrentUserId();
+            int count = missionService.getCompletedMissionCountByUser(userId);
+            // (숫자만 반환해도 되지만, JSON 객체로 감싸서 반환)
+            return ResponseEntity.ok(Map.of("completedCount", count));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     /** 방문: 방문 인증 시도 (POST /api/missions/visit/{missionId}) */
     @PostMapping("/visit/{missionId}")
     public ResponseEntity<?> attemptVisitMission(

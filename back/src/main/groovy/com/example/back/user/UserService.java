@@ -25,7 +25,6 @@ import java.util.UUID;
 import com.example.back.user.dto.RewardExchangeRequest;
 import com.example.back.user.dto.RewardExchangeResponse;
 import com.example.back.user.dto.RewardVoucherListResponse;
-import java.util.stream.Collectors;
 import com.example.back.user.dto.PlantActivateRequest;
 
 @Service

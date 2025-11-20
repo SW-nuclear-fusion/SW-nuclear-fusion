@@ -188,6 +188,16 @@ public class MissionService {
         return locationMissionRepository.findAll();
     }
 
+    public int getCompletedMissionCountByUser(String userId) {
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+
+        // [방법 1] 오늘 하루 완료한 개수
+        return missionLogRepository.countByUser_UserIdAndCompletionDate(userId, today);
+
+        // [방법 2] (참고) 오늘과 상관없이 "총" 완료한 개수 (중복 포함)
+        // return missionLogRepository.countByUser_UserId(userId);
+    }
+
     /** 방문 인증 시도 */
     @Transactional
     public RewardDto completeVisitMission(String userId, Long missionId, VisitRequestDto visitRequest) {
